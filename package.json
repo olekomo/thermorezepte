@@ -19,12 +19,12 @@
     "prettier": "^3.6.2"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
-      "prettier --write"
+    "apps/web/**/*.{ts,tsx,js,jsx}": [
+      "pnpm -C apps/web exec eslint --fix",
+      "pnpm -C apps/web exec prettier --write"
     ],
-    "*.{json,css,md}": [
-      "prettier --write"
+    "apps/web/**/*.{json,css,md}": [
+      "pnpm -C apps/web exec prettier --write"
     ]
   }
 }

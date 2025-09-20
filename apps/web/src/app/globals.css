@@ -1,26 +1,31 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Design Tokens via Tailwind v4 @theme */
+@theme {
+  --color-bg: 255 255 255;
+  --color-fg: 15 23 42;
+  --color-primary: 59 130 246;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --radius-xl: 12px;
+  --container-max: 1100px;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  @theme {
+    --color-bg: 2 6 23;
+    --color-fg: 241 245 249;
+    --color-primary: 96 165 250;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+:root {
+  color: rgb(var(--color-fg));
+  background-color: rgb(var(--color-bg));
+}
+
+.container-max {
+  max-width: var(--container-max);
+}
+.card {
+  @apply rounded-2xl border border-black/5 shadow-sm p-6;
 }
