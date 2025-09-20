@@ -21,13 +21,7 @@
     "@types/react-dom": "^19",
     "@typescript-eslint/eslint-plugin": "^8.44.0",
     "@typescript-eslint/parser": "^8.44.0",
-    "eslint": "^9",
     "eslint-config-next": "15.5.3",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-import": "^2.32.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.1.6",
-    "prettier": "^3.6.2",
     "tailwindcss": "^4",
     "typescript": "^5.9.2"
   }
