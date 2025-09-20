@@ -1,0 +1,12 @@
+{
+  "name": "thermoRezepte",
+  "private": true,
+  "packageManager": "pnpm@9",
+  "scripts": {
+    "dev": "pnpm --filter @app/web dev",
+    "build": "pnpm --filter @app/web build",
+    "lint": "pnpm --filter @app/web lint",
+    "typecheck": "pnpm --filter @app/web typecheck",
+    "start": "pnpm --filter @app/web start"
+  }
+}
