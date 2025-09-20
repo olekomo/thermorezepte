@@ -6,7 +6,25 @@
     "build": "pnpm --filter @app/web build",
     "lint": "pnpm --filter @app/web lint",
     "typecheck": "pnpm --filter @app/web typecheck",
-    "start": "pnpm --filter @app/web start"
+    "start": "pnpm --filter @app/web start",
+    "prepare": "husky"
   },
-  "packageManager": "pnpm@9.12.3"
+  "packageManager": "pnpm@9.12.3",
+  "devDependencies": {
+    "eslint": "^9",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^16.1.6",
+    "prettier": "^3.6.2"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,md}": [
+      "prettier --write"
+    ]
+  }
 }
