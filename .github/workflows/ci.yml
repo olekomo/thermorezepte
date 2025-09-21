@@ -1,36 +1,41 @@
 name: CI
+
 on:
   push:
     branches:
       - '**'
   pull_request:
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
+
 jobs:
   web:
-    name: Web Lint/Typecheck/Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # pnpm zuerst einrichten – OHNE "version"
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
           run_install: false
-      - name: Setup Node.js
+
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
+
       - name: Install (workspace)
         run: pnpm install --frozen-lockfile
+
       - name: Lint
         run: pnpm --filter @app/web lint
+
       - name: Typecheck
         run: pnpm --filter @app/web typecheck
+
       - name: Build
         run: pnpm --filter @app/web build
