@@ -1,4 +1,5 @@
 'use client'
+export const dynamic = 'force-dynamic'
 import { useState } from 'react'
 import { supabaseBrowser } from '@/lib/supabase/browser'
 
@@ -9,7 +10,7 @@ export default function Page() {
   const [msg, setMsg] = useState<string | null>(null)
 
   const signup = async () => {
-    const redirect = `${window.location.origin}/auth/callback?redirect=/`
+    const redirect = `${location.origin}/auth/callback?redirect=/`
     const { error } = await s.auth.signUp({
       email,
       password,

@@ -36,6 +36,10 @@ jobs:
 
       - name: Typecheck
         run: pnpm --filter @app/web typecheck
-
+        
       - name: Build
         run: pnpm --filter @app/web build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }},
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        
