@@ -1,14 +1,15 @@
 import { supabaseServerRSC } from '@/lib/supabase/server-rsc'
+import Link from 'next/link'
 
 export default async function Recipes() {
-  const s = await supabaseServerRSC() // <-- await!
+  const s = await supabaseServerRSC()
   const {
     data: { user },
   } = await s.auth.getUser()
   if (!user)
     return (
       <div>
-        Bitte <a href="/login">einloggen</a>.
+        Bitte <Link href="/login">einloggen</Link>.
       </div>
     )
 

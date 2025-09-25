@@ -1,4 +1,5 @@
 import { supabaseServerRSC } from '@/lib/supabase/server-rsc'
+import Link from 'next/link'
 
 export default async function Home() {
   const s = await supabaseServerRSC() // <-- await!
@@ -16,7 +17,7 @@ export default async function Home() {
           </form>
         </>
       ) : (
-        <a href="/login">Einloggen</a>
+        <Link href="/login">Einloggen</Link>
       )}
     </main>
   )

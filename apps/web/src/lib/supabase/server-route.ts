@@ -6,7 +6,6 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 type SupabaseWithResponse = { supabase: SupabaseClient; response: NextRes }
 
 export const createSupabaseForRoute = (req: NextRequest, res?: NextRes): SupabaseWithResponse => {
-  // falls keine Response mitgegeben wird, eine anlegen (kannst du später weiterverwenden/returnen)
   const response = res ?? NextResponse.next()
 
   const supabase = createServerClient(
@@ -17,11 +16,17 @@ export const createSupabaseForRoute = (req: NextRequest, res?: NextRes): Supabas
         getAll() {
           return req.cookies.getAll()
         },
-        // ✅ Hier dürfen wir setzen: in die *Response*-Cookies
         setAll(cookies) {
           cookies.forEach(({ name, value, options }) => {
             response.cookies.set(name, value, options)
           })
+        },
+      },
+      // Optional: relevante Forwarded-Header direkt vom Request durchreichen
+      global: {
+        headers: {
+          'X-Forwarded-For': req.headers.get('x-forwarded-for') ?? '',
+          'User-Agent': req.headers.get('user-agent') ?? '',
         },
       },
     },
