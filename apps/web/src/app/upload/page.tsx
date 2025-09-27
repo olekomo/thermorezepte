@@ -7,10 +7,27 @@ import { useCameraStream } from '@/hooks/useCameraStream'
 type Status = 'idle' | 'compressing' | 'uploading' | 'done' | 'error'
 
 export default function UploadPage() {
-  const { file, previewUrl, onPickFile, clear } = useFilePicker()
-  const { videoRef, startCamera, stopStream, isRunning } = useCameraStream()
+  const { file, previewUrl, onPickFile, setWithPreview, clear } = useFilePicker()
+  const { videoRef, startCamera, stopStream, isRunning, cameraError, capturePhoto } =
+    useCameraStream()
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState<string | null>(null)
+  const [captureError, setCaptureError] = useState<string | null>(null)
+  const [isCapturing, setIsCapturing] = useState(false)
+
+  const handleCapture = useCallback(async () => {
+    setCaptureError(null)
+    try {
+      setIsCapturing(true)
+      const photo = await capturePhoto()
+      setWithPreview(photo)
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Foto konnte nicht aufgenommen werden.'
+      setCaptureError(message)
+    } finally {
+      setIsCapturing(false)
+    }
+  }, [capturePhoto, setWithPreview])
 
   const upload = useCallback(async () => {
     try {
@@ -62,7 +79,10 @@ export default function UploadPage() {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={startCamera}
+              onClick={() => {
+                setCaptureError(null)
+                startCamera()
+              }}
               disabled={isRunning}
               className="rounded-2xl px-4 py-2 bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed shadow"
             >
@@ -77,9 +97,18 @@ export default function UploadPage() {
             >
               Stop
             </button>
+
+            <button
+              onClick={handleCapture}
+              disabled={!isRunning || isCapturing}
+              className="rounded-2xl px-4 py-2 bg-emerald-600 text-white shadow disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isCapturing ? 'Foto wird erstellt…' : 'Foto aufnehmen'}
+            </button>
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {cameraError && <p className="text-sm text-red-600">{cameraError}</p>}
+          {captureError && <p className="text-sm text-red-600">{captureError}</p>}
 
           <div className="aspect-video w-full rounded-2xl bg-black overflow-hidden shadow">
             <video

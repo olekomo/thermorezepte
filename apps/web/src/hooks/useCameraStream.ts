@@ -7,6 +7,47 @@ export function useCameraStream() {
   const [isRunning, setIsRunning] = useState(false)
   const [cameraError, setCameraError] = useState<string | null>(null)
 
+  const capturePhoto = useCallback(async () => {
+    const video = videoRef.current
+    if (!video) {
+      throw new Error('Kein Videoelement verfügbar.')
+    }
+
+    if (!isRunning || !streamRef.current) {
+      throw new Error('Kamera ist nicht aktiv.')
+    }
+
+    const width = video.videoWidth
+    const height = video.videoHeight
+
+    if (!width || !height) {
+      throw new Error('Video ist noch nicht bereit.')
+    }
+
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) {
+      throw new Error('Canvas-Kontext nicht verfügbar.')
+    }
+
+    ctx.drawImage(video, 0, 0, width, height)
+
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob((b) => resolve(b), 'image/jpeg', 0.92),
+    )
+
+    if (!blob) {
+      throw new Error('Foto konnte nicht aufgenommen werden.')
+    }
+
+    return new File([blob], `camera-${Date.now()}.jpg`, {
+      type: 'image/jpeg',
+    })
+  }, [isRunning])
+
   const stopStream = useCallback(() => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((t) => t.stop())
@@ -61,5 +102,5 @@ export function useCameraStream() {
     return () => stopStream()
   }, [stopStream])
 
-  return { videoRef, startCamera, stopStream, isRunning, cameraError }
+  return { videoRef, startCamera, stopStream, isRunning, cameraError, capturePhoto }
 }
