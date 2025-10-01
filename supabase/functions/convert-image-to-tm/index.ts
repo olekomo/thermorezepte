@@ -20,26 +20,39 @@ Deno.serve(async (req)=>{
     if (!rec?.bucket_id || !rec?.name) return new Response("ignored", {
       status: 200
     });
+    if (rec.bucket_id !== "raw_uploads") {
+      return new Response("ignored-bucket", {
+        status: 200
+      });
+    }
     const bucket = rec.bucket_id;
     const name = rec.name;
     const imagePath = `${bucket}/${name}`;
     const firstSlash = name.indexOf("/");
     const userId = firstSlash > 0 ? name.slice(0, firstSlash) : null;
     if (!userId) {
-      await markError(imagePath, "user-id-not-found-in-path");
+      await markError(imagePath, "user-id-not-found-in-path", userId ?? null);
       return new Response("bad-object-key", {
         status: 400
       });
     }
     await supabase.from("recipes").upsert({
       image_path: imagePath,
+      user_id: userId,
       status: "pending"
     }, {
       onConflict: "image_path"
     });
+    // ADD: nicht nochmal konvertieren, wenn schon "done"
+    const { data: existing } = await supabase.from("recipes").select("status").eq("image_path", imagePath).maybeSingle();
+    if (existing?.status === "done") {
+      return new Response("already-processed", {
+        status: 200
+      });
+    }
     const { data: signed, error: signErr } = await supabase.storage.from(bucket).createSignedUrl(name, 600);
     if (signErr || !signed?.signedUrl) {
-      await markError(imagePath, `sign-url: ${signErr?.message ?? "unknown"}`);
+      await markError(imagePath, `sign-url: ${signErr?.message ?? "unknown"}`, userId);
       return new Response("sign-url-failed", {
         status: 500
       });
@@ -84,7 +97,7 @@ Deno.serve(async (req)=>{
     if (!llmRes.ok) {
       const txt = await llmRes.text();
       console.error("OPENAI_ERROR:", txt); // <- bleibt im Serve-Log sichtbar
-      await markError(imagePath, `llm: ${txt.slice(0, 500)}`);
+      await markError(imagePath, `llm: ${txt.slice(0, 500)}`, userId);
       return new Response("llm-error", {
         status: 500
       });
@@ -114,7 +127,7 @@ Deno.serve(async (req)=>{
     });
     if (upErr) {
       console.error("[Error] DB_ERROR:", upErr);
-      await markError(imagePath, `db-upsert: ${upErr.message}`);
+      await markError(imagePath, `db-upsert: ${upErr.message}`, userId);
       return new Response("db-error", {
         status: 500
       });
@@ -129,9 +142,14 @@ Deno.serve(async (req)=>{
     });
   }
 });
-async function markError(image_path, error) {
-  await supabase.from("recipes").update({
-    status: "error",
-    error
-  }).eq("image_path", image_path);
+async function markError(image_path, error, user_id) {
+  await supabase.from("recipes").upsert(
+    {
+      image_path,
+      user_id,          // <-- wichtig, sonst NOT NULL
+      status: "error",
+      error: String(error).slice(0, 500)
+    },
+    { onConflict: "image_path" }
+  );
 }
