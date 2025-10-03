@@ -9,17 +9,6 @@ const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 // --- Clients ---
 const supabase = createClient(PROJECT_URL!, SERVICE_ROLE_KEY!);
 
-// (Optional) Vorgabe für das gewünschte JSON-Format in der Antwort
-const SCHEMA = `{
-  "title": "string",
-  "portions": "number",
-  "duration_minutes": "number",
-  "accessories": ["string"],
-  "ingredients": [{"name":"string","amount":"string","notes":"string"}],
-  "steps": [{"step":"string","thermomix":{"mode":"string","temp_c":"number|null","speed":"string","time_seconds":"number|null"}}],
-  "notes": "string"
-}`;
-
 Deno.serve(async (req) => {
   try {
     const evt = await req.json();
@@ -47,7 +36,7 @@ Deno.serve(async (req) => {
       return new Response("ignored-bucket", { status: 200 });
     }
 
-    const bucket = rec.bucket_id;          // "raw_uploads"
+    const bucket = rec.bucket_id;           // "raw_uploads"
     const name = rec.name;                  // "<USER_ID>/<filename>.jpg"
     const imagePath = `${bucket}/${name}`;  // "raw_uploads/<USER_ID>/<filename>.jpg"
 
@@ -107,20 +96,74 @@ Deno.serve(async (req) => {
     }
     console.log("signed-url.ok");
 
-    // ---- OpenAI-Aufruf (Chat Completions, Text + Bild)
+    const jsonSchema = {
+      name: "thermomix_recipe",
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        // strict-Mode: alle Keys aus properties müssen hier gelistet werden
+        required: ["title", "portions", "duration_minutes", "accessories", "ingredients", "steps", "notes"],
+        properties: {
+          title: { type: "string", minLength: 1 },
+          portions: { type: ["number", "null"] },           // required, aber darf null sein
+          duration_minutes: { type: ["number", "null"] },   // required, aber darf null sein
+          accessories: { type: "array", items: { type: "string" } }, // required, ggf. leeres Array
+          ingredients: {
+            type: "array",
+            minItems: 1,
+            items: {
+              type: "object",
+              additionalProperties: false,
+              // strict-Mode: alle Keys aus properties müssen hier in required
+              required: ["name", "amount", "notes"],
+              properties: {
+                name: { type: "string", minLength: 1 },
+                amount: { type: ["string", "null"] }, // erlaubt null, falls unbekannt
+                notes: { type: ["string", "null"] }
+              }
+            }
+          },
+          steps: {
+            type: "array",
+            minItems: 1,
+            items: {
+              type: "object",
+              additionalProperties: false,
+              required: ["step", "thermomix"],
+              properties: {
+                step: { type: "string", minLength: 1 },
+                thermomix: {
+                  type: "object",
+                  additionalProperties: false,
+                  // alle Keys required, einzelne dürfen null sein
+                  required: ["mode", "temp_c", "speed", "time_seconds"],
+                  properties: {
+                    mode: { type: "string" },
+                    temp_c: { type: ["number", "null"] },
+                    speed: { type: "string" },
+                    time_seconds: { type: ["number", "null"] }
+                  }
+                }
+              }
+            }
+          },
+          notes: { type: ["string", "null"] } // required, darf aber null sein
+        }
+      },
+      strict: true
+    } as const;
+
+
     const userContent = [
       {
         type: "text",
         text:
-          `Extrahiere das Rezept aus dem Bild und konvertiere es in ein Thermomix-Rezept.
-Antworte ausschließlich als gültiges JSON im folgendem Schema:
-${SCHEMA}
-Fehlende Thermomix-Parameter vorsichtig schätzen und in 'notes' vermerken.`
+`Extrahiere das Rezept aus dem Bild und konvertiere es in ein Thermomix-Rezept.
+
+Gib AUSSCHLIESSLICH gültiges JSON entsprechend dem bereitgestellten Schema aus.
+Wenn eine Angabe fehlt, schätze vorsichtig und notiere Annahmen in "notes".`
       },
-      {
-        type: "image_url",
-        image_url: { url: signed.signedUrl } // signierte Supabase-URL
-      }
+      { type: "image_url", image_url: { url: signed.signedUrl } }
     ];
 
     console.log("openai.start");
@@ -132,6 +175,7 @@ Fehlende Thermomix-Parameter vorsichtig schätzen und in 'notes' vermerken.`
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
+        response_format: { type: "json_schema", json_schema: jsonSchema },
         messages: [
           { role: "system", content: "Du bist ein strenger JSON-Formatter. Gib NUR gültiges JSON aus." },
           { role: "user", content: userContent }
@@ -147,22 +191,25 @@ Fehlende Thermomix-Parameter vorsichtig schätzen und in 'notes' vermerken.`
       return new Response("llm-error", { status: 500 });
     }
 
-    const data = await llmRes.json();
+    const llmRespJson = await llmRes.json();
     console.log("openai.done");
 
-    // ---- Inhalt extrahieren und JSON parsen
-    let content = data?.choices?.[0]?.message?.content ?? "{}";
-    content = content.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
-
-    let recipeJson: any;
+    // Bei response_format=json_schema liefert OpenAI pures JSON als String
+    const llmJsonText = llmRespJson?.choices?.[0]?.message?.content ?? "{}";
+    let parsedRecipe: any;
     try {
-      recipeJson = JSON.parse(content);
+      parsedRecipe = JSON.parse(llmJsonText);
     } catch {
-      recipeJson = { notes: "Model output not JSON", raw: content };
+      parsedRecipe = { notes: "Model output not JSON", raw: llmJsonText };
     }
 
-    const title =
-      (recipeJson?.title && String(recipeJson.title).trim()) || "Unbenanntes Rezept";
+    // Minimal-Validierung (defensiv)
+    if (!parsedRecipe?.title || !Array.isArray(parsedRecipe?.ingredients) || !Array.isArray(parsedRecipe?.steps)) {
+      await markError(imagePath, "schema-validation-failed: missing required fields", userId);
+      return new Response("schema-error", { status: 500 });
+    }
+
+    const title = String(parsedRecipe.title).trim() || "Unbenanntes Rezept";
 
     // ---- Finaler Upsert: status = done
     const up2 = await supabase
@@ -172,7 +219,7 @@ Fehlende Thermomix-Parameter vorsichtig schätzen und in 'notes' vermerken.`
           image_path: imagePath,
           user_id: userId,
           title,
-          recipe_json: recipeJson,
+          recipe_json: parsedRecipe,
           status: "done",
           error: null
         },
@@ -200,7 +247,7 @@ async function markError(image_path: string, error: string, user_id: string | nu
     .upsert(
       {
         image_path,
-        user_id: user_id ?? undefined, // wenn unbekannt, bleibt undefined (späterer Upsert mit user_id überschreibt)
+        user_id: user_id ?? undefined,
         status: "error",
         error: String(error).slice(0, 500)
       },
