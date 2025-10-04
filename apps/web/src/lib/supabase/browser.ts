@@ -8,7 +8,6 @@ export const supabaseBrowser = () => {
   if (client) return client
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  // Empfehlung: einheitlich ANON/PUBLISHABLE verwenden, aber nicht beides mischen
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
   client = createBrowserClient(url, key, {
