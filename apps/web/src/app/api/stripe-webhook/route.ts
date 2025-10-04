@@ -1,7 +1,7 @@
 // apps/web/app/api/stripe-webhook/route.ts
 import Stripe from 'stripe'
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '')
 
@@ -20,9 +20,7 @@ if (!HAS_SUPABASE) {
   )
 }
 
-const supabase = HAS_SUPABASE
-  ? createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
-  : null
+const supabase = supabaseAdmin
 
 // ==== Helpers (Supabase) ====
 async function getUserIdByCustomer(customerId: string) {
@@ -53,12 +51,19 @@ async function upsertEntitlement(params: {
   currentPeriodEnd?: number | null // unix ts (Sekunden)
   nowIso: string
 }) {
-  if (!supabase) return
   const { userId, status, priceId, subscriptionId, currentPeriodEnd, nowIso } = params
   const currentPeriodEndIso = currentPeriodEnd
     ? new Date(currentPeriodEnd * 1000).toISOString()
     : null
 
+  console.warn('[webhook] entitlement INSERT payload', {
+    userId,
+    status,
+    priceId,
+    subscriptionId,
+    currentPeriodEndIso: currentPeriodEndIso ?? null,
+  })
+  // 👇 TEMPORÄR: reiner Insert, damit sicher ein Datensatz entsteht
   const { error } = await supabase.from('entitlements').upsert(
     {
       user_id: userId,
@@ -70,8 +75,12 @@ async function upsertEntitlement(params: {
       current_period_end: currentPeriodEndIso,
       last_event_at: nowIso,
     },
-    { onConflict: 'stripe_subscription_id' },
+    {
+      onConflict: 'user_id,key,source', // 🔑 jetzt konflikt auf unserer Idempotenz-Spalte
+      ignoreDuplicates: false, // explicit, default ist okay – zur Klarheit
+    },
   )
+
   if (error) throw error
 }
 
@@ -118,7 +127,7 @@ export async function POST(req: Request) {
 
   const nowIso = new Date().toISOString()
   const type = event.type
-  console.log('[webhook] received:', type)
+  console.warn('[webhook] received:', type)
 
   try {
     switch (type) {
@@ -129,7 +138,7 @@ export async function POST(req: Request) {
         if (userId && customerId) {
           try {
             await attachCustomerToUser(userId, customerId)
-            console.log('[webhook] attached customer to user', { userId, customerId })
+            console.warn('[webhook] attached customer to user', { userId, customerId })
           } catch (e: any) {
             console.error('[webhook] attachCustomerToUser failed:', e?.message ?? e)
           }
@@ -164,13 +173,48 @@ export async function POST(req: Request) {
             currentPeriodEnd: getSubscriptionPeriodEnd(sub),
             nowIso,
           })
-          console.log('[webhook] entitlement upsert ok', {
+          console.warn('[webhook] entitlement upsert ok', {
             userId,
             subId: sub.id,
             status: sub.status,
           })
         } catch (e: any) {
           console.error('[webhook] upsertEntitlement error:', e?.message ?? e)
+        }
+
+        break
+      }
+
+      case 'invoice.payment_succeeded':
+      case 'invoice.paid': {
+        // legacy alias
+        const inv = event.data.object as Stripe.Invoice
+        const customerId = inv.customer as string
+
+        let userId: string | null = null
+        try {
+          userId = await getUserIdByCustomer(customerId)
+        } catch (e: any) {
+          console.error('[webhook] getUserIdByCustomer error:', e?.message ?? e)
+        }
+
+        if (!userId) {
+          console.warn('[webhook] no user mapped for customer (paid):', customerId, '— skipping')
+          break
+        }
+
+        try {
+          await upsertEntitlement({
+            userId,
+            status: 'active', // Zahlung erfolgreich = aktiv
+            priceId: getInvoicePriceId(inv),
+            subscriptionId: getInvoiceSubscriptionId(inv),
+            currentPeriodEnd: getInvoicePeriodEnd(inv),
+            nowIso,
+          })
+          console.warn('[webhook] entitlement set active (invoice paid)', { userId })
+        } catch (e: any) {
+          console.error('[webhook] upsertEntitlement error (invoice paid):', e?.message ?? e)
         }
 
         break
@@ -201,7 +245,7 @@ export async function POST(req: Request) {
             currentPeriodEnd: getInvoicePeriodEnd(inv),
             nowIso,
           })
-          console.log('[webhook] entitlement set past_due', { userId })
+          console.warn('[webhook] entitlement set past_due', { userId })
         } catch (e: any) {
           console.error('[webhook] upsertEntitlement error:', e?.message ?? e)
         }
