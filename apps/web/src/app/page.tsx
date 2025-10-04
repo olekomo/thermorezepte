@@ -2,7 +2,7 @@ import { supabaseServerRSC } from '@/lib/supabase/server-rsc'
 import Link from 'next/link'
 
 export default async function Home() {
-  const s = await supabaseServerRSC() // <-- await!
+  const s = await supabaseServerRSC()
   const {
     data: { user },
   } = await s.auth.getUser()
@@ -12,9 +12,6 @@ export default async function Home() {
       {user ? (
         <>
           <p>Angemeldet als {user.email}</p>
-          <form action="/logout" method="post">
-            <button>Logout</button>
-          </form>
         </>
       ) : (
         <Link href="/login">Einloggen</Link>
