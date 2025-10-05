@@ -1,6 +1,6 @@
-import './globals.css'
+import '@/app/globals.css'
 import type { Metadata } from 'next'
-import type { ReactNode } from 'react' // ⬅️ hinzufügen
+import type { ReactNode } from 'react'
 
 export const metadata: Metadata = {
   title: 'ThermoRezepte',
@@ -8,7 +8,6 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  // ⬅️ ReactNode statt React.ReactNode
   return (
     <html lang="de">
       <body className="min-h-dvh">{children}</body>
