@@ -1,36 +1,25 @@
 'use client'
-export const dynamic = 'force-dynamic'
-import { useState } from 'react'
+import { Button } from '@/components/ui/button'
 import { supabaseBrowser } from '@/lib/supabase/browser'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 
-export default function Page() {
+export default function LoginPage() {
   const s = supabaseBrowser()
-  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('')
   const [msg, setMsg] = useState<string | null>(null)
+  const searchParams = useSearchParams()
 
-  const signup = async () => {
-    const redirect = `${location.origin}/auth/callback?redirect=/`
-    const { error } = await s.auth.signUp({
-      email,
-      password,
-      options: { emailRedirectTo: redirect },
-    })
-    setMsg(error ? error.message : 'Check deine E-Mails zur Bestätigung.')
-  }
+  useEffect(() => {
+    const e = searchParams.get('email')
+    if (e) setEmail(e)
+  }, [searchParams])
 
   const login = async () => {
     const { error } = await s.auth.signInWithPassword({ email, password })
     setMsg(error ? error.message : 'Eingeloggt – Seite lädt neu...')
     if (!error) location.href = '/'
-  }
-
-  const magic = async () => {
-    const { error } = await s.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${location.origin}/auth/callback?redirect=/` },
-    })
-    setMsg(error ? error.message : 'Magic Link gesendet.')
   }
 
   const reset = async () => {
@@ -42,7 +31,7 @@ export default function Page() {
 
   return (
     <div style={{ maxWidth: 420, margin: '40px auto', display: 'grid', gap: 8 }}>
-      <h1>Login</h1>
+      <h1>Anmelden</h1>
       <input placeholder="email" value={email} onChange={e => setEmail(e.target.value)} />
       <input
         placeholder="password"
@@ -50,10 +39,10 @@ export default function Page() {
         value={password}
         onChange={e => setPassword(e.target.value)}
       />
-      <button onClick={login}>Login (E-Mail/Passwort)</button>
-      <button onClick={signup}>Signup</button>
-      <button onClick={magic}>Magic Link</button>
-      <button onClick={reset}>Passwort zurücksetzen</button>
+      <Button onClick={login}>Anmelden</Button>
+      <Button variant="link" onClick={reset}>
+        Passwort vergessen
+      </Button>
       {msg && <p>{msg}</p>}
     </div>
   )

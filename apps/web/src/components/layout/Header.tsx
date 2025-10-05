@@ -30,10 +30,10 @@ const headerVariants = cva(
     },
     defaultVariants: {
       position: 'sticky',
-      bordered: true,
+      bordered: false,
       height: 'md',
     },
-  },
+  }
 )
 
 const headerContentVariants = cva('mx-auto flex items-center justify-between px-4', {
@@ -49,7 +49,6 @@ type HeaderProps = VariantProps<typeof headerVariants> &
   VariantProps<typeof headerContentVariants> & {
     left?: ReactNode
     right?: ReactNode
-    title?: ReactNode
     className?: string
     contentClassName?: string
   }
@@ -57,7 +56,6 @@ type HeaderProps = VariantProps<typeof headerVariants> &
 export function Header({
   left,
   right,
-  title,
   className,
   contentClassName,
   position,
@@ -68,15 +66,8 @@ export function Header({
   return (
     <header className={cn(headerVariants({ position, bordered, height }), className)}>
       <div className={cn(headerContentVariants({ maxWidth }), contentClassName)}>
-        <div className="flex w-1/3 items-center gap-2">{left}</div>
-        <div className="flex w-1/3 items-center justify-center">
-          {typeof title === 'string' ? (
-            <span className="truncate font-semibold">{title}</span>
-          ) : (
-            title
-          )}
-        </div>
-        <div className="flex w-1/3 items-center justify-end gap-2">{right}</div>
+        <div className="flex items-center gap-2">{left}</div>
+        <div className="flex items-center gap-2">{right}</div>
       </div>
     </header>
   )

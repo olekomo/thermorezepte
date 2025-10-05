@@ -1,7 +1,9 @@
+import { Button } from './ui/button'
+
 export default function LogoutForm() {
   return (
     <form action="/api/auth/logout" method="post">
-      <button>Logout</button>
+      <Button>Logout</Button>
     </form>
   )
 }
