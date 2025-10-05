@@ -24,7 +24,7 @@ export default async function Recipes() {
       <h1>Rezepte</h1>
       {error && <p>Fehler: {error.message}</p>}
       <ul>
-        {data?.map((r) => (
+        {data?.map(r => (
           <li key={r.id}>
             {r.title} — {r.visibility} — owner: {r.user_id}
           </li>

@@ -1,17 +1,17 @@
-import { Button } from '@/components/ui/button'
-import { supabaseServerRSC } from '@/lib/supabase/server-rsc'
+import { Header } from '@/components/layout/Header'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Header } from '@/components/layout/Header'
+import type { ReactNode } from 'react'
+import { Button } from '@/components/ui/button'
+import { supabaseServerRSC } from '@/lib/supabase/server-rsc'
 
-export default async function HomePage() {
+export default async function RootLayout({ children }: { children: ReactNode }) {
   const s = await supabaseServerRSC()
   const {
     data: { user },
   } = await s.auth.getUser()
-
   return (
-    <div className="space-y-4">
+    <>
       <Header
         title=""
         left={
@@ -36,6 +36,7 @@ export default async function HomePage() {
         position="sticky"
         bordered
       />
-    </div>
+      {children}
+    </>
   )
 }

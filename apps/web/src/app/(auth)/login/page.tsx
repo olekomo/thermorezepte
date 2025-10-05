@@ -43,12 +43,12 @@ export default function Page() {
   return (
     <div style={{ maxWidth: 420, margin: '40px auto', display: 'grid', gap: 8 }}>
       <h1>Login</h1>
-      <input placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <input placeholder="email" value={email} onChange={e => setEmail(e.target.value)} />
       <input
         placeholder="password"
         type="password"
         value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={e => setPassword(e.target.value)}
       />
       <button onClick={login}>Login (E-Mail/Passwort)</button>
       <button onClick={signup}>Signup</button>

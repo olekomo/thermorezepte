@@ -59,7 +59,7 @@ export default function HistoryPage() {
     <main className="mx-auto max-w-3xl p-6 space-y-4">
       <h1 className="text-2xl font-semibold">Deine letzten Uploads</h1>
       <ul className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {items.map((it) => (
+        {items.map(it => (
           <li key={it.name} className="rounded-xl border p-2">
             <img src={it.signedUrl} alt={it.name} className="w-full h-40 object-cover rounded-lg" />
             <p className="mt-2 text-xs text-gray-500 break-all">{it.name}</p>
