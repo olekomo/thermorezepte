@@ -1,6 +1,6 @@
 export default function LogoutForm() {
   return (
-    <form action="/logout" method="post">
+    <form action="/api/auth/logout" method="post">
       <button>Logout</button>
     </form>
   )

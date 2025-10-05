@@ -98,6 +98,8 @@
 }
 
 :root {
+  --sat: env(safe-area-inset-top);
+  --sab: env(safe-area-inset-bottom);
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.129 0.042 264.695);
@@ -173,4 +175,11 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.safe-bottom {
+  padding-bottom: max(1rem, var(--sab));
+}
+.safe-top {
+  padding-top: max(0.5rem, var(--sat));
 }

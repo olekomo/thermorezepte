@@ -3,8 +3,8 @@ import type { Metadata } from 'next'
 import type { ReactNode } from 'react' // ⬅️ hinzufügen
 
 export const metadata: Metadata = {
-  title: 'Web Skeleton',
-  description: 'Phase 0 baseline',
+  title: 'ThermoRezepte',
+  description: 'Die besten Thermomix-Rezepte',
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
