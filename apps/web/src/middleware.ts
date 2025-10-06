@@ -3,11 +3,9 @@ import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { updateSession } from './lib/supabase/middleware'
 
-const PROTECTED_ROUTES = ['/upload', '/history', '/recipes']
-const AUTH_ROUTES = ['/login', '/register']
-const x = 1
+const PROTECTED_ROUTES = ['/app', '/camera', '/recipes', '/account', '/settings']
+const AUTH_ROUTES = ['/create-account', '/log-in', '/log-in-or-create-account']
 export async function middleware(req: NextRequest) {
-  if (x == 1) return NextResponse.next()
   const { response, user } = await updateSession(req)
   const { pathname } = req.nextUrl
 
@@ -18,7 +16,7 @@ export async function middleware(req: NextRequest) {
 
   if (isProtectedRoute && !user) {
     const url = req.nextUrl.clone()
-    url.pathname = '/login'
+    url.pathname = '/log-in-or-create-account'
     url.searchParams.set('from', pathname)
     return NextResponse.redirect(url)
   }
@@ -33,5 +31,14 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/upload/:path*', '/history/:path*', '/recipes/:path*', '/login', '/register'],
+  matcher: [
+    '/app/:path*',
+    '/settings/:path*',
+    '/recipes/:path*',
+    '/camera/:path*',
+    '/account/:path*',
+    '/log-in',
+    '/create-account',
+    '/log-in-or-create-account',
+  ],
 }
