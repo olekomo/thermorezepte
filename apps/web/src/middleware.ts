@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server'
 import { updateSession } from './lib/supabase/middleware'
 
 const PROTECTED_ROUTES = ['/app', '/camera', '/recipes', '/account', '/settings']
-const AUTH_ROUTES = ['/create-account', '/log-in', '/log-in-or-create-account']
+const AUTH_ROUTES = ['/create-account/password', '/log-in/password', '/log-in-or-create-account']
 export async function middleware(req: NextRequest) {
   const { response, user } = await updateSession(req)
   const { pathname } = req.nextUrl
@@ -23,7 +23,7 @@ export async function middleware(req: NextRequest) {
 
   if (isAuthRoute && user) {
     const url = req.nextUrl.clone()
-    url.pathname = '/'
+    url.pathname = '/app'
     return NextResponse.redirect(url)
   }
 
@@ -37,8 +37,8 @@ export const config = {
     '/recipes/:path*',
     '/camera/:path*',
     '/account/:path*',
-    '/log-in',
-    '/create-account',
+    '/log-in/password',
+    '/create-account/password',
     '/log-in-or-create-account',
   ],
 }
