@@ -39,7 +39,7 @@ export default function LoginClient() {
       const { error } = await s.auth.signInWithPassword({ email, password })
       setMsg(error ? error.message : 'Eingeloggt – weiterleiten...')
       if (!error) {
-        router.replace('/')
+        router.replace('/app')
         setTimeout(() => router.refresh(), 0)
       }
     } catch (e: any) {
@@ -69,13 +69,13 @@ export default function LoginClient() {
     <div style={{ maxWidth: 420, margin: '40px auto', display: 'grid', gap: 8 }}>
       <h1>Anmelden</h1>
       <input
-        placeholder="email"
+        placeholder="E-Mail-Adresse"
         inputMode="email"
         value={email}
         onChange={e => setEmail(e.target.value)}
       />
       <input
-        placeholder="password"
+        placeholder="Password"
         type="password"
         value={password}
         onChange={e => setPassword(e.target.value)}

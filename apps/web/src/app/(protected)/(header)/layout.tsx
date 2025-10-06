@@ -4,6 +4,7 @@ import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import AccountDropDownMenu from '@/components/AccountDropDownMenu'
+import LoggedInLeftHeaderComponent from './LoggedInLeftHeaderComponent'
 
 export default async function Layout({ children }: { children: ReactNode }) {
   const s = await supabaseServerRSC()
@@ -16,11 +17,11 @@ export default async function Layout({ children }: { children: ReactNode }) {
         left={
           user ? (
             <Button>
-              <Link href="/log-in-or-create-account">Anmelden</Link>
+              <LoggedInLeftHeaderComponent user={user} />
             </Button>
           ) : (
             <Button>
-              <Link href="/log-in-or-create-account"></Link>
+              <Link href="/log-in-or-create-account">logo</Link>
             </Button>
           )
         }

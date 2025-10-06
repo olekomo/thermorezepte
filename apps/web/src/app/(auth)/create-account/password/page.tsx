@@ -13,7 +13,7 @@ export default function CreateAccountPage() {
   const signup = async () => {
     try {
       setBusy(true)
-      const redirect = `${location.origin}/auth/callback?redirect=/`
+      const redirect = `${location.origin}/api/auth/callback?redirect=/`
       const { error } = await s.auth.signUp({
         email,
         password,
