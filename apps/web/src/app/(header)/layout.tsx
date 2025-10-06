@@ -13,6 +13,17 @@ export default async function Layout({ children }: { children: ReactNode }) {
   return (
     <>
       <Header
+        left={
+          user ? (
+            <Button>
+              <Link href="/log-in-or-create-account">Anmelden</Link>
+            </Button>
+          ) : (
+            <Button>
+              <Link href="/log-in-or-create-account"></Link>
+            </Button>
+          )
+        }
         right={
           user ? (
             <AccountDropDownMenu user={user.email}></AccountDropDownMenu>

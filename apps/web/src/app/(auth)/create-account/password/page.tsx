@@ -1,22 +1,30 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { supabaseBrowser } from '@/lib/supabase/browser'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
-export default function RegisterPage() {
-  const s = supabaseBrowser()
+export default function CreateAccountPage() {
+  const s = useMemo(() => supabaseBrowser(), [])
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [msg, setMsg] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
 
   const signup = async () => {
-    const redirect = `${location.origin}/api/auth/callback?redirect=/`
-    const { error } = await s.auth.signUp({
-      email,
-      password,
-      options: { emailRedirectTo: redirect },
-    })
-    setMsg(error ? error.message : 'Check deine E-Mails zur Bestätigung.')
+    try {
+      setBusy(true)
+      const redirect = `${location.origin}/auth/callback?redirect=/`
+      const { error } = await s.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: redirect },
+      })
+      setMsg(error ? error.message : 'Check deine E-Mails zur Bestätigung.')
+    } catch (e: any) {
+      setMsg(e?.message ?? 'Unbekannter Fehler.')
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -29,7 +37,9 @@ export default function RegisterPage() {
         value={password}
         onChange={e => setPassword(e.target.value)}
       />
-      <Button onClick={signup}>Erstellen</Button>
+      <Button onClick={signup} disabled={busy || !email || !password}>
+        Erstellen
+      </Button>
       {msg && <p>{msg}</p>}
     </div>
   )
