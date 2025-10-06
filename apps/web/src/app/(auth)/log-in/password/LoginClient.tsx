@@ -1,5 +1,4 @@
 'use client'
-
 import { Button } from '@/components/ui/button'
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
@@ -37,10 +36,12 @@ export default function LoginClient() {
     try {
       setBusy(true)
       const s = supabaseRef.current ?? (await import('@/lib/supabase/browser')).supabaseBrowser()
-
       const { error } = await s.auth.signInWithPassword({ email, password })
       setMsg(error ? error.message : 'Eingeloggt – weiterleiten...')
-      if (!error) router.push('/') // SPA-Navigation; falls du hard reload willst: window.location.href = '/'
+      if (!error) {
+        router.replace('/')
+        setTimeout(() => router.refresh(), 0)
+      }
     } catch (e: any) {
       setMsg(e?.message ?? 'Unbekannter Fehler beim Anmelden.')
     } finally {

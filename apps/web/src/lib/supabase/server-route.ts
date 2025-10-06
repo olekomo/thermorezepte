@@ -6,7 +6,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 type SupabaseWithResponse = { supabase: SupabaseClient; response: NextRes }
 
 export const createSupabaseForRoute = (req: NextRequest, res?: NextRes): SupabaseWithResponse => {
-  const response = res ?? NextResponse.next()
+  const response = res ?? NextResponse.next({ request: req })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,14 +22,7 @@ export const createSupabaseForRoute = (req: NextRequest, res?: NextRes): Supabas
           })
         },
       },
-      // Optional: relevante Forwarded-Header direkt vom Request durchreichen
-      global: {
-        headers: {
-          'X-Forwarded-For': req.headers.get('x-forwarded-for') ?? '',
-          'User-Agent': req.headers.get('user-agent') ?? '',
-        },
-      },
-    },
+    }
   )
 
   return { supabase, response }
