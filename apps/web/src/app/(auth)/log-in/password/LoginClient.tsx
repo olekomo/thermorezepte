@@ -1,11 +1,10 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 export default function LoginClient() {
   const router = useRouter()
-  const searchParams = useSearchParams()
 
   const [password, setPassword] = useState('')
   const [email, setEmail] = useState('')
@@ -26,11 +25,8 @@ export default function LoginClient() {
   }, [])
 
   useEffect(() => {
-    const e = searchParams.get('email')
-    if (e) setEmail(e)
-    const err = searchParams.get('error')
-    if (err) setMsg(err)
-  }, [searchParams])
+    setEmail(sessionStorage.getItem('emailPrefill') || '')
+  }, [])
 
   const login = useCallback(async () => {
     try {
@@ -55,7 +51,7 @@ export default function LoginClient() {
       const s = supabaseRef.current ?? (await import('@/lib/supabase/browser')).supabaseBrowser()
 
       const { error } = await s.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/callback?redirect=/reset-password`,
+        redirectTo: `${window.location.origin}/api/auth/callback?redirect=/reset-password`,
       })
       setMsg(error ? error.message : 'Passwort-Reset gesendet.')
     } catch (e: any) {

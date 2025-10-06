@@ -1,7 +1,7 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { supabaseBrowser } from '@/lib/supabase/browser'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 export default function CreateAccountPage() {
   const s = useMemo(() => supabaseBrowser(), [])
@@ -10,10 +10,14 @@ export default function CreateAccountPage() {
   const [msg, setMsg] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
+  useEffect(() => {
+    setEmail(sessionStorage.getItem('emailPrefill') || '')
+  }, [])
+
   const signup = async () => {
     try {
       setBusy(true)
-      const redirect = `${location.origin}/api/auth/callback?redirect=/`
+      const redirect = `${location.origin}/api/auth/callback?redirect=/app`
       const { error } = await s.auth.signUp({
         email,
         password,
