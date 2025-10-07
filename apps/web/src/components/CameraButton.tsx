@@ -1,22 +1,22 @@
 'use client'
 import { useRef } from 'react'
+import { Button } from './ui/button'
 
 type Props = {
   // eslint-disable-next-line no-unused-vars
   onPick?: (file: File) => void // hier kannst du uploaden/anzeigen/navigieren
+  label: string
+  style?: React.CSSProperties
 }
 
-export default function CameraButton({ onPick }: Props) {
+export default function CameraButton({ onPick, label, style }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   return (
     <div>
-      <button
-        onClick={() => inputRef.current?.click()}
-        style={{ padding: '10px 16px', borderRadius: 8 }}
-      >
-        Foto aufnehmen
-      </button>
+      <Button onClick={() => inputRef.current?.click()} style={style}>
+        {label}
+      </Button>
 
       <input
         ref={inputRef}
