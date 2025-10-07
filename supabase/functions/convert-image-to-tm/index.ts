@@ -8,6 +8,37 @@ const INTERNAL_SECRET = Deno.env.get("INTERNAL_SECRET")!; // neu!
 
 const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
+const ensureUser = async (uid: string) => {
+  // existiert der User in public.users?
+  const { data: urow, error: uerr } = await admin
+    .from('users')
+    .select('id')
+    .eq('id', uid)
+    .maybeSingle();
+
+  if (uerr) {
+    console.error('ensureUser.select.error', uerr);
+    throw new Error('ensure-user-select-failed');
+  }
+  if (urow) return;
+
+  // Email aus Auth ziehen (Service-Role-only)
+  const { data: adminUser, error: aerr } = await admin.auth.admin.getUserById(uid);
+  if (aerr) {
+    console.error('ensureUser.authAdmin.error', aerr);
+    throw new Error('ensure-user-auth-admin-failed');
+  }
+  const email = adminUser?.user?.email ?? `${uid}@invalid.local`;
+
+  const { error: iErr } = await admin
+    .from('users')
+    .insert({ id: uid, email });
+  if (iErr) {
+    console.error('ensureUser.insert.error', iErr);
+    throw new Error('ensure-user-insert-failed');
+  }
+};
+
 Deno.serve(async (req) => {
   if (req.method !== "POST") return new Response("method-not-allowed", { status: 405 });
 
@@ -36,8 +67,9 @@ Deno.serve(async (req) => {
     if (ownerId !== userId) return new Response("forbidden-image", { status: 403 });
 
     // ---- Upsert pending
+    await ensureUser(userId)
     const up1 = await admin.from("recipes").upsert(
-      { image_path: imagePath, user_id: userId, status: "pending", error: null },
+      { image_path: imagePath, user_id: userId, status: "pending", error_message: null },
       { onConflict: "image_path" }
     );
     if (up1.error) return new Response("db-upsert-pending-error", { status: 500 });
@@ -105,8 +137,8 @@ Deno.serve(async (req) => {
 
     const userContent = [
       { type: "text", text:
-`Extrahiere das Rezept aus dem Bild und konvertiere es in ein Thermomix-Rezept.
-Thermomix-Version: ${tmVersion ?? "unbekannt"} (z. B. t5/t6). Verwende passende Modi/Bezeichnungen.
+`Extrahiere das Rezept aus dem Bild und konvertiere es in ein Cookidoo ähnliches Thermomix-Rezept.
+Thermomix-Version: ${tmVersion ?? "unbekannt"}. Verwende passende Modi/Bezeichnungen.
 Gib AUSSCHLIESSLICH gültiges JSON gemäß Schema aus. Fehlende Angaben vorsichtig schätzen und in "notes" vermerken.` },
       { type: "image_url", image_url: { url: signed.signedUrl } }
     ];
@@ -146,7 +178,7 @@ Gib AUSSCHLIESSLICH gültiges JSON gemäß Schema aus. Fehlende Angaben vorsicht
     const title = String(parsed.title).trim() || "Unbenanntes Rezept";
 
     const up2 = await admin.from("recipes").upsert(
-      { image_path: imagePath, user_id: userId, title, recipe_json: recipeToStore, status: "done", error: null },
+      { image_path: imagePath, user_id: userId, title, recipe_json: recipeToStore, status: "done", error_message: null },
       { onConflict: "image_path" }
     );
     if (up2.error) {
@@ -166,7 +198,7 @@ Gib AUSSCHLIESSLICH gültiges JSON gemäß Schema aus. Fehlende Angaben vorsicht
 
 async function markError(image_path: string, error: string, user_id: string | null) {
   await admin.from("recipes").upsert(
-    { image_path, user_id: user_id ?? undefined, status: "error", error: String(error).slice(0, 500) },
+    { image_path, user_id: user_id ?? undefined, status: "error", error_message: String(error).slice(0, 500) },
     { onConflict: "image_path" }
   );
 }
