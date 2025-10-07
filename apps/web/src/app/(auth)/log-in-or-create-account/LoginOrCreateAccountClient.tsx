@@ -37,10 +37,22 @@ export default function LoginOrCreateAccountClient() {
   return (
     <div style={{ maxWidth: 420, margin: '40px auto', display: 'grid', gap: 8 }}>
       <h1>Anmelden</h1>
-      <input placeholder="E-Mail-Adresse" value={email} onChange={e => setEmail(e.target.value)} />
-      <Button onClick={handleContinueWithEmail} disabled={!email}>
-        Weiter
-      </Button>
+      <form
+        onSubmit={e => {
+          e.preventDefault()
+          handleContinueWithEmail()
+        }}
+        style={{ display: 'grid', gap: 8 }}
+      >
+        <input
+          placeholder="E-Mail-Adresse"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+        />
+        <Button type="submit" disabled={!email}>
+          Weiter
+        </Button>
+      </form>
     </div>
   )
 }

@@ -64,21 +64,29 @@ export default function LoginClient() {
   return (
     <div style={{ maxWidth: 420, margin: '40px auto', display: 'grid', gap: 8 }}>
       <h1>Anmelden</h1>
-      <input
-        placeholder="E-Mail-Adresse"
-        inputMode="email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-      />
-      <input
-        placeholder="Password"
-        type="password"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-      />
-      <Button onClick={login} disabled={!email || !password || busy}>
-        Anmelden
-      </Button>
+      <form
+        onSubmit={e => {
+          e.preventDefault()
+          login()
+        }}
+        style={{ display: 'grid', gap: 8 }}
+      >
+        <input
+          placeholder="E-Mail-Adresse"
+          inputMode="email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+        />
+        <input
+          placeholder="Password"
+          type="password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+        />
+        <Button type="submit" disabled={!email || !password || busy}>
+          Anmelden
+        </Button>
+      </form>
       <Button variant="link" onClick={reset} disabled={!email || busy}>
         Passwort vergessen
       </Button>

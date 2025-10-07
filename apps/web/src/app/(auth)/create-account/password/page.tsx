@@ -34,16 +34,30 @@ export default function CreateAccountPage() {
   return (
     <div style={{ maxWidth: 420, margin: '40px auto', display: 'grid', gap: 8 }}>
       <h1>Account erstellen</h1>
-      <input placeholder="E-Mail-Adresse" value={email} onChange={e => setEmail(e.target.value)} />
-      <input
-        placeholder="Passwort"
-        type="password"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-      />
-      <Button onClick={signup} disabled={busy || !email || !password}>
-        Erstellen
-      </Button>
+      <form
+        onSubmit={e => {
+          e.preventDefault()
+          signup()
+        }}
+        style={{ display: 'grid', gap: 8 }}
+      >
+        <input
+          placeholder="E-Mail-Adresse"
+          inputMode="email"
+          type="email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+        />
+        <input
+          placeholder="Passwort"
+          type="password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+        />
+        <Button type="submit" disabled={busy || !email || !password}>
+          Erstellen
+        </Button>
+      </form>
       {msg && <p>{msg}</p>}
     </div>
   )
