@@ -18,9 +18,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
     <>
       <Header
         left={
-          <Button>
             <LoggedInLeftHeaderComponent user={user} />
-          </Button>
         }
         right={<AccountDropDownMenu user={user?.email}></AccountDropDownMenu>}
       />
