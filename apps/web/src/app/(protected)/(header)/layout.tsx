@@ -16,11 +16,8 @@ export default async function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col bg-background">
       <Header
-        maxWidth="full"
-        contentClassName="px-4 sm:px-6 lg:px-8"
-        className="shadow-sm"
         left={<LoggedInLeftHeaderComponent user={user} />}
-        right={<AccountDropDownMenu user={user?.email} />}
+        right={<AccountDropDownMenu user={user?.email}></AccountDropDownMenu>}
       />
       <main className="flex-1">
         <div className="mx-auto flex w-full max-w-screen-md flex-1 flex-col gap-6 px-4 pb-16 pt-6 sm:px-6 lg:max-w-screen-lg lg:px-8">
