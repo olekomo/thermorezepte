@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button'
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { ROUTES } from '@/lib/routes'
 
 export default function LoginClient() {
   const router = useRouter()
@@ -50,8 +51,11 @@ export default function LoginClient() {
       setBusy(true)
       const s = supabaseRef.current ?? (await import('@/lib/supabase/browser')).supabaseBrowser()
 
+      const origin = window.location.origin
+      const redirect = encodeURIComponent('/reset-password')
+
       const { error } = await s.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/api/auth/callback?redirect=/reset-password`,
+        redirectTo: `${origin}${ROUTES.authCallbackClient}?intent=recovery&redirect=${redirect}`,
       })
       setMsg(error ? error.message : 'Passwort-Reset gesendet.')
     } catch (e: any) {

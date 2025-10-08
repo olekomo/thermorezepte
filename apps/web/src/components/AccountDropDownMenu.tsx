@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import LogoutForm from './Logout'
+import LogoutForm from './LogoutButton'
 import {
   DropdownMenu,
   DropdownMenuTrigger,

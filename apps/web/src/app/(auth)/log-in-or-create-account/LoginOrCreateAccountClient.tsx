@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
+import { GoogleSignInButton } from '@/components/oauth/GoogleSignInButton'
 
 export default function LoginOrCreateAccountClient() {
   const router = useRouter()
@@ -37,6 +38,7 @@ export default function LoginOrCreateAccountClient() {
   return (
     <div style={{ maxWidth: 420, margin: '40px auto', display: 'grid', gap: 8 }}>
       <h1>Anmelden</h1>
+      <GoogleSignInButton />
       <form
         onSubmit={e => {
           e.preventDefault()

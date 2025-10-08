@@ -18,7 +18,7 @@ export default function LoggedInLeftHeaderComponent({ user }: { user: User | nul
     }
   }, [pathname])
 
-  const clickHandler = useCallback(() => {
+  const destinationHandler = useCallback(() => {
     if (pathname === '/recipes') {
       router.push('/app')
     } else {
@@ -27,7 +27,7 @@ export default function LoggedInLeftHeaderComponent({ user }: { user: User | nul
   }, [pathname])
   return (
     <div>
-      <Button onClick={clickHandler}>{destination}</Button>
+      <Button onClick={destinationHandler}>{destination}</Button>
     </div>
   )
 }

@@ -1,10 +1,9 @@
 import type { ReactNode } from 'react'
-import { supabaseServerRSC } from '@/lib/supabase/server-rsc'
-import { Header } from '@/components/layout/Header'
-import { Button } from '@/components/ui/button'
-import AccountDropDownMenu from '@/components/AccountDropDownMenu'
-import LoggedInLeftHeaderComponent from './LoggedInLeftHeaderComponent'
 import { redirect } from 'next/navigation'
+import AccountDropDownMenu from '@/components/AccountDropDownMenu'
+import { Header } from '@/components/layout/Header'
+import { supabaseServerRSC } from '@/lib/supabase/server-rsc'
+import LoggedInLeftHeaderComponent from './LoggedInLeftHeaderComponent'
 
 export default async function Layout({ children }: { children: ReactNode }) {
   const s = await supabaseServerRSC()
@@ -15,16 +14,19 @@ export default async function Layout({ children }: { children: ReactNode }) {
     redirect('/log-in/password')
   }
   return (
-    <>
+    <div className="flex min-h-dvh flex-col bg-background">
       <Header
-        left={
-          <Button>
-            <LoggedInLeftHeaderComponent user={user} />
-          </Button>
-        }
-        right={<AccountDropDownMenu user={user?.email}></AccountDropDownMenu>}
+        maxWidth="full"
+        contentClassName="px-4 sm:px-6 lg:px-8"
+        className="shadow-sm"
+        left={<LoggedInLeftHeaderComponent user={user} />}
+        right={<AccountDropDownMenu user={user?.email} />}
       />
-      {children}
-    </>
+      <main className="flex-1">
+        <div className="mx-auto flex w-full max-w-screen-md flex-1 flex-col gap-6 px-4 pb-16 pt-6 sm:px-6 lg:max-w-screen-lg lg:px-8">
+          {children}
+        </div>
+      </main>
+    </div>
   )
 }

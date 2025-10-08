@@ -1,37 +1,27 @@
-export const dynamic = 'force-dynamic'
-
-import { NextResponse, type NextRequest } from 'next/server'
 import { createSupabaseForRoute } from '@/lib/supabase/server-route'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
   const url = req.nextUrl
-  const code = url.searchParams.get('code')
-  const redirectParam = url.searchParams.get('redirect') || '/'
+  const code = url.searchParams.get('code') || ''
 
-  // nur relative Redirects erlauben (Open-Redirect-Schutz)
-  const isRelative = redirectParam.startsWith('/')
-  const target = isRelative ? redirectParam : '/'
+  // Ziel aus Cookie (Fallback: / oder ?redirect=)
+  const cookieRedirect = req.cookies.get('post_oauth_redirect')?.value
+  let redirectParam = url.searchParams.get('redirect') || cookieRedirect || '/'
+  if (!redirectParam.startsWith('/')) redirectParam = '/'
 
-  if (!code) {
-    return NextResponse.redirect(new URL('/', url.origin))
-  }
-
-  // Redirect-Response vorab bauen (damit Cookies gesetzt werden können)
-  const redirectUrl = new URL(target, url.origin)
-  const res = NextResponse.redirect(redirectUrl)
+  // Redirect-Response vorab
+  const res = NextResponse.redirect(new URL(redirectParam, url.origin))
+  // Cookie löschen
+  res.cookies.set('post_oauth_redirect', '', { path: '/', maxAge: 0 })
 
   const { supabase, response } = createSupabaseForRoute(req, res)
 
   try {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (error) {
-      // z.B. auf eine Fehlerseite oder zurück auf Login mit Marker
-      const fail = new URL(`/log-in?error=auth_code_invalid`, url.origin)
-      return NextResponse.redirect(fail)
-    }
+    if (error) return NextResponse.redirect(new URL('/login?error=auth_code_invalid', url.origin))
   } catch {
-    const fail = new URL(`/log-in?error=auth_code_exception`, url.origin)
-    return NextResponse.redirect(fail)
+    return NextResponse.redirect(new URL('/login?error=auth_code_exception', url.origin))
   }
 
   return response
