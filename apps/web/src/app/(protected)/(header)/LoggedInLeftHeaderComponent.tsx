@@ -24,7 +24,7 @@ export default function LoggedInLeftHeaderComponent({ user }: { user: User | nul
     } else {
       router.push('/recipes')
     }
-  }, [pathname])
+  }, [pathname, router])
   return (
     <div>
       <Button onClick={destinationHandler}>{destination}</Button>

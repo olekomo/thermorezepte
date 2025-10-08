@@ -24,7 +24,6 @@ export default function AuthCallbackPage() {
     ;(async () => {
       try {
         const hash = window.location.hash || ''
-        console.log('Auth callback hash:', hash)
         const kv = parseHash(hash)
         const access_token = kv['access_token']
         const refresh_token = kv['refresh_token']
@@ -48,7 +47,6 @@ export default function AuthCallbackPage() {
               : ROUTES.app
 
         const target = qRedirect && qRedirect.startsWith('/') ? qRedirect : intentFallback
-        console.log('Auth callback success, redirecting to:', target)
         router.replace(target)
       } catch (err) {
         console.error('Auth callback failed:', err)

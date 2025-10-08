@@ -8,11 +8,15 @@ import {
   DropdownMenuSeparator,
 } from './ui/dropdown-menu'
 import { Button } from './ui/button'
+import UserAvatar from './UserAvatar'
 
 export default function AccountDropDownMenu(props: { user: any }) {
+  void props
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>{props.user}</DropdownMenuTrigger>
+      <DropdownMenuTrigger>
+        <UserAvatar />
+      </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem asChild>
           <Button>

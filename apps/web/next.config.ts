@@ -15,7 +15,9 @@ const SUPABASE_HOST = resolveSupabaseHost()
 
 const nextConfig: NextConfig = {
   images: {
-    domains: SUPABASE_HOST ? [SUPABASE_HOST] : [],
+    domains: SUPABASE_HOST
+      ? [SUPABASE_HOST, 'lh3.googleusercontent.com']
+      : ['lh3.googleusercontent.com'],
     remotePatterns: SUPABASE_HOST
       ? [
           {

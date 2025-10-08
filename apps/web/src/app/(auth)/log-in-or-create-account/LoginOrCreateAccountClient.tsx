@@ -37,8 +37,9 @@ export default function LoginOrCreateAccountClient() {
 
   return (
     <div style={{ maxWidth: 420, margin: '40px auto', display: 'grid', gap: 8 }}>
-      <h1>Anmelden</h1>
+      <h1 className="text-center font-bold text-xl">Anmelden</h1>
       <GoogleSignInButton />
+      <div className="text-center">oder</div>
       <form
         onSubmit={e => {
           e.preventDefault()
