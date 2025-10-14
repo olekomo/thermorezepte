@@ -22,19 +22,21 @@ const headerVariants = cva(
         false: '',
       },
       height: {
+        auto: "",
         sm: 'h-12',
         md: 'h-14',
+        lg: "h-16",
       },
     },
     defaultVariants: {
       position: 'sticky',
-      bordered: false,
+      bordered: true,
       height: 'md',
     },
   }
 )
 
-const headerContentVariants = cva('mx-auto flex items-center justify-between px-4', {
+const headerContentVariants = cva('mx-auto flex items-center justify-between', {
   variants: {
     maxWidth: maxWidthVariants,
   },

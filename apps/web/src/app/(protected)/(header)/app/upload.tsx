@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { supabaseBrowser } from '@/lib/supabase/browser'
 import { useFilePicker, compressImage } from '@/hooks/useFilePicker'
 import { useCameraStream } from '@/hooks/useCameraStream'
+import { Button } from '@/components/ui/button'
 
 type Status = 'idle' | 'compressing' | 'uploading' | 'done' | 'error'
 
@@ -146,7 +147,7 @@ export default function AppPage() {
           <h1 className="text-2xl font-semibold">Webcam Demo</h1>
 
           <div className="flex items-center gap-3">
-            <button
+            <Button
               onClick={() => {
                 setCaptureError(null)
                 startCamera()
@@ -155,24 +156,24 @@ export default function AppPage() {
               className="rounded-2xl px-4 py-2 bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed shadow"
             >
               {isRunning ? 'Kamera läuft' : 'Kamera starten'}
-            </button>
+            </Button>
 
             {/* Optionaler Stop-Button – hilfreich für Tests/Privacy */}
-            <button
+            <Button
               onClick={stopStream}
               disabled={!isRunning}
               className="rounded-2xl px-4 py-2 bg-white text-black border shadow disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Stop
-            </button>
+            </Button>
 
-            <button
+            <Button
               onClick={handleCapture}
               disabled={!isRunning || isCapturing}
               className="rounded-2xl px-4 py-2 bg-emerald-600 text-white shadow disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isCapturing ? 'Foto wird erstellt…' : 'Foto aufnehmen'}
-            </button>
+            </Button>
           </div>
 
           {cameraError && <p className="text-sm text-red-600">{cameraError}</p>}
