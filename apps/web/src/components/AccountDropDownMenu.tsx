@@ -1,39 +1,21 @@
-import Link from 'next/link'
-import LogoutForm from './LogoutButton'
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from './ui/dropdown-menu'
-import { Button } from './ui/button'
-import UserAvatar from './UserAvatar'
+// app/_components/AccountDropDownMenu.tsx  (Server Component)
+import { supabaseServerRSC } from '@/lib/supabase/server-rsc';
+import AccountDropDownMenuClient from './AccountDropDownMenuClient';
 
-export default function AccountDropDownMenu(props: { user: any }) {
-  void props
+export default async function AccountDropDownMenu() {
+  const supabase = await supabaseServerRSC();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  const metadata = user.user_metadata ?? {};
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger>
-        <UserAvatar />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem asChild>
-          <Button>
-            <Link href="/pricing">Plan upgraden</Link>
-          </Button>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Button>
-            <Link href="/settings">Einstellungen</Link>
-          </Button>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <LogoutForm />
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
+    <AccountDropDownMenuClient
+      email={user.email ?? ''}
+      name={metadata.full_name || metadata.name || ''}
+      avatarUrl={metadata.avatar_url || metadata.picture || null}
+    />
+  );
 }

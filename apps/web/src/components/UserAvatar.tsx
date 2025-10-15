@@ -1,31 +1,57 @@
-// app/_components/UserAvatar.tsx (Server Component)
 import Image from 'next/image'
 import { supabaseServerRSC } from '@/lib/supabase/server-rsc'
+import { cn } from '@/lib/utils' // falls du shadcn/utils nutzt – sonst einfach entfernen
 
-export default async function UserAvatar() {
+type Props = {
+  className?: string
+  size?: number // optional: z. B. 32, 40, 64 …
+}
+
+export default async function UserAvatar({ className, size = 40 }: Props) {
   const supabase = await supabaseServerRSC()
 
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const avatar =
-    user?.user_metadata?.avatar_url ||
-    user?.user_metadata?.picture || // (Google liefert oft 'picture')
-    null
-
-  const name = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || 'User'
-
   if (!user) return null
 
+  const avatar =
+    user?.user_metadata?.avatar_url ||
+    user?.user_metadata?.picture ||
+    null
+
+  const name =
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    user?.email ||
+    'User'
+
+  const initials = name.charAt(0).toUpperCase()
+
   return (
-    <div className="flex items-center gap-2">
+    <div
+      className={cn(
+        'relative flex items-center justify-center overflow-hidden rounded-full bg-muted text-foreground/70',
+        className
+      )}
+      style={{
+        width: size,
+        height: size,
+        fontSize: Math.max(10, size * 0.35),
+      }}
+      title={name}
+    >
       {avatar ? (
-        <Image src={avatar} alt={name} width={64} height={64} className="rounded-full" />
+        <Image
+          src={avatar}
+          alt={name}
+          width={size}
+          height={size}
+          className="object-cover"
+        />
       ) : (
-        <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center">
-          <span className="text-xs">{name.charAt(0).toUpperCase()}</span>
-        </div>
+        <span>{initials}</span>
       )}
     </div>
   )

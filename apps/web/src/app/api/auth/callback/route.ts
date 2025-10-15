@@ -6,12 +6,8 @@ export async function GET(req: NextRequest) {
   const code = url.searchParams.get('code') || ''
   const type = url.searchParams.get('type') || ''
 
-  console.log(code, type)
-
-
-  // Redirect-Response vorab
   const res = NextResponse.redirect(new URL('/app', url.origin))
-  // Cookie löschen
+  
   res.cookies.set('post_oauth_redirect', '', { path: '/', maxAge: 0 })
 
   const { supabase, response } = createSupabaseForRoute(req, res)
