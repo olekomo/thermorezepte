@@ -4,14 +4,13 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function GET(req: NextRequest) {
   const url = req.nextUrl
   const code = url.searchParams.get('code') || ''
+  const type = url.searchParams.get('type') || ''
 
-  // Ziel aus Cookie (Fallback: / oder ?redirect=)
-  const cookieRedirect = req.cookies.get('post_oauth_redirect')?.value
-  let redirectParam = url.searchParams.get('redirect') || cookieRedirect || '/'
-  if (!redirectParam.startsWith('/')) redirectParam = '/'
+  console.log(code, type)
+
 
   // Redirect-Response vorab
-  const res = NextResponse.redirect(new URL(redirectParam, url.origin))
+  const res = NextResponse.redirect(new URL('/app', url.origin))
   // Cookie löschen
   res.cookies.set('post_oauth_redirect', '', { path: '/', maxAge: 0 })
 

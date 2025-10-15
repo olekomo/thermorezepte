@@ -51,7 +51,7 @@ export default function CreateAccountPage() {
   async function onSubmit(values: FormValues) {
     try {
       setBusy(true);
-      const redirect = `${location.origin}/api/auth/callback?redirect=/app`;
+      const redirect = `${location.origin}/api/auth/callback`;
       const { error } = await s.auth.signUp({
         email: values.email,
         password: values.password,
