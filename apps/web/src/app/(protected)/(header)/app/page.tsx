@@ -262,67 +262,23 @@ export default function AppPage() {
   const hasStructuredRecipeData = ingredients.length > 0 || steps.length > 0
 
   return (
-    <div
-      style={{
-        padding: 24,
-        maxWidth: 420,
-        margin: '0 auto',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 16,
-      }}
-    >
-      <div
-        style={{
-          position: 'relative',
-          border: '1px solid #E2E2E2',
-          borderRadius: 12,
-          height: 360,
-          overflow: 'hidden',
-          background: '#fff',
-        }}
-      >
-        <div
-          style={{
-            position: 'absolute',
-            top: 10,
-            left: 10,
-            fontSize: 12,
-            padding: '4px 10px',
-            borderRadius: 999,
-            background: '#F3F3F3',
-            border: '1px solid #E2E2E2',
-            textTransform: 'capitalize',
-          }}
-        >
-          Bild
-        </div>
+    <div className="mx-auto w-full max-w-screen-sm space-y-4 px-4 sm:space-y-6">
+      {/* Bild/Result Card */}
+      <div className="relative h-[360px] overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
 
         <div
-          style={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: showRecipe ? 'stretch' : 'center',
-            justifyContent: showRecipe ? 'flex-start' : 'center',
-            padding: showRecipe ? 20 : 0,
-            overflowY: showRecipe ? 'auto' : 'hidden',
-            gap: showRecipe ? 16 : 0,
-          }}
+          className={`flex h-full w-full ${showRecipe ? 'items-start justify-start p-5 overflow-y-auto space-y-4 flex-col' : 'items-center justify-center'} `}
         >
           {showSpinner ? (
             <Spinner />
           ) : showRecipe ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ fontSize: 18, fontWeight: 600 }}>{recipeTitle}</div>
+            <div className="flex flex-col gap-4">
+              <div className="text-lg font-semibold">{recipeTitle}</div>
 
               {(recipeJson?.portions || recipeJson?.duration_minutes) && (
-                <div style={{ display: 'flex', gap: 16, fontSize: 14, color: '#555' }}>
+                <div className="flex gap-4 text-sm text-muted-foreground">
                   {recipeJson?.portions && <span>Portionen: {recipeJson.portions}</span>}
-                  {recipeJson?.duration_minutes && (
-                    <span>Dauer: {recipeJson.duration_minutes} min</span>
-                  )}
+                  {recipeJson?.duration_minutes && <span>Dauer: {recipeJson.duration_minutes} min</span>}
                 </div>
               )}
 
@@ -330,18 +286,10 @@ export default function AppPage() {
                 <>
                   {ingredients.length > 0 && (
                     <div>
-                      <div style={{ fontWeight: 600, marginBottom: 6 }}>Zutaten</div>
-                      <ul
-                        style={{
-                          margin: 0,
-                          paddingLeft: 18,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: 6,
-                        }}
-                      >
+                      <div className="mb-1 font-semibold">Zutaten</div>
+                      <ul className="ml-4 flex list-disc flex-col gap-1.5">
                         {ingredients.map((ing, idx) => (
-                          <li key={idx} style={{ fontSize: 14 }}>
+                          <li key={idx} className="text-sm leading-6">
                             {formatIngredientLine(ing)}
                           </li>
                         ))}
@@ -351,31 +299,17 @@ export default function AppPage() {
 
                   {steps.length > 0 && (
                     <div>
-                      <div style={{ fontWeight: 600, marginBottom: 6 }}>Schritte</div>
-                      <ol
-                        style={{
-                          margin: 0,
-                          paddingLeft: 20,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: 8,
-                        }}
-                      >
+                      <div className="mb-1 font-semibold">Schritte</div>
+                      <ol className="ml-5 flex list-decimal flex-col gap-2">
                         {steps.map((step, idx) => {
                           const meta = getStepMeta(step)
                           const notes = getStepNotes(step)
                           return (
-                            <li key={idx} style={{ fontSize: 14, lineHeight: 1.5 }}>
+                            <li key={idx} className="text-sm leading-6">
                               <div>{getStepText(step, idx)}</div>
-                              {meta && (
-                                <div style={{ fontSize: 12, color: '#666', marginTop: 2 }}>
-                                  {meta}
-                                </div>
-                              )}
+                              {meta && <div className="mt-0.5 text-xs text-muted-foreground">{meta}</div>}
                               {notes && (
-                                <div style={{ fontSize: 12, color: '#666', marginTop: 2 }}>
-                                  Hinweis: {notes}
-                                </div>
+                                <div className="mt-0.5 text-xs text-muted-foreground">Hinweis: {notes}</div>
                               )}
                             </li>
                           )
@@ -385,52 +319,40 @@ export default function AppPage() {
                   )}
                 </>
               ) : (
-                <div style={{ fontSize: 14, color: '#666' }}>
-                  Keine strukturierten Rezeptdaten gefunden.
-                </div>
+                <div className="text-sm text-muted-foreground">Keine strukturierten Rezeptdaten gefunden.</div>
               )}
 
               {recipeId && (
                 <div>
-                  <Link
-                    href={`/recipes/${recipeId}`}
-                    style={{ color: '#2563eb', textDecoration: 'underline', fontSize: 14 }}
-                  >
+                  <Link href={`/recipes/${recipeId}`} className="text-sm text-primary underline underline-offset-4">
                     Zum vollständigen Rezept
                   </Link>
                 </div>
               )}
             </div>
           ) : hasPreview ? (
-            <Image
-              src={preview as string}
-              alt="Vorschau"
-              width={320}
-              height={320}
-              style={{ objectFit: 'contain', maxHeight: '100%' }}
-            />
+            <div className="relative h-full w-full">
+              <Image
+                src={preview as string}
+                alt="Vorschau"
+                fill
+                sizes="(max-width: 640px) 100vw, 640px"
+                className="object-contain"
+                priority
+              />
+            </div>
           ) : (
-            <div style={{ color: '#555', fontSize: 16, textAlign: 'center', padding: '0 24px' }}>
-              Laden Sie ein Bild von einem Rezept hoch
+            <div className="px-6 text-center text-muted-foreground">
+              <p className="text-base">Lade ein Bild von einem Rezept hoch</p>
             </div>
           )}
         </div>
       </div>
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 16,
-          marginTop: 8,
-        }}
-      >
+      {/* Actions */}
+      <div className="grid grid-cols-2 gap-4 sm:gap-4">
         <div>
-          <Button
-            variant="secondary"
-            onClick={() => fileInputRef.current?.click()}
-            style={{ width: '100%' }}
-          >
+          <Button variant="secondary" onClick={() => fileInputRef.current?.click()} className="w-full rounded-xl">
             Rezept hochladen
           </Button>
           <input
@@ -446,15 +368,11 @@ export default function AppPage() {
         </div>
 
         <div>
-          <CameraButton
-            onPick={onPickFromDisk}
-            label="Rezept fotografieren"
-            style={{ width: '100%' }}
-          />
+          <CameraButton onPick={onPickFromDisk} label="Rezept fotografieren" />
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <label style={{ fontSize: 14 }}>Thermomix Version</label>
+        <div className="col-span-2 grid gap-2">
+          <label className="text-sm text-foreground/80">Thermomix Version</label>
           <select
             value={tmVersion || ''}
             onChange={e => {
@@ -462,13 +380,7 @@ export default function AppPage() {
               setTmVersion(v)
               saveThermomixVersion(v)
             }}
-            style={{
-              height: 40,
-              borderRadius: 8,
-              border: '1px solid #E2E2E2',
-              padding: '0 10px',
-              background: '#fff',
-            }}
+            className="h-10 rounded-lg border border-border bg-background px-3 text-sm outline-none ring-offset-background focus:ring-2 focus:ring-ring/50"
           >
             <option value="" disabled>
               Bitte wählen…
@@ -477,56 +389,30 @@ export default function AppPage() {
             <option value="t6">TM6</option>
             <option value="t7">TM7</option>
           </select>
-          {tmSaveInfo && <div style={{ fontSize: 12, color: '#666' }}>{tmSaveInfo}</div>}
+          {tmSaveInfo && <div className="text-xs text-muted-foreground">{tmSaveInfo}</div>}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'end' }}>
-          <Button onClick={onSubmit} disabled={!file || isPolling} style={{ width: '100%' }}>
+        <div className="col-span-2">
+          <Button onClick={onSubmit} disabled={!file || isPolling} className="h-11 w-full rounded-xl">
             Abschicken
           </Button>
         </div>
       </div>
 
-      {status && <div>Status: {status}</div>}
-      {error && <div style={{ color: 'red' }}>Fehler: {error}</div>}
-      {recipeError && <div style={{ color: 'red' }}>Rezeptfehler: {recipeError}</div>}
-      {recipe && (
-        <div style={{ color: '#666', fontSize: 14 }}>
-          Rezeptstatus: {recipe.status ?? 'unbekannt'}
-        </div>
-      )}
+      {/* Status/Fehler */}
+      {status && <div className="text-sm text-foreground/80">Status: {status}</div>}
+      {error && <div className="text-sm text-destructive">Fehler: {error}</div>}
+      {recipeError && <div className="text-sm text-destructive">Rezeptfehler: {recipeError}</div>}
+      {recipe && <div className="text-sm text-muted-foreground">Rezeptstatus: {recipe.status ?? 'unbekannt'}</div>}
     </div>
   )
 }
 
 function Spinner() {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 12,
-        width: '100%',
-      }}
-    >
-      <div
-        style={{
-          width: 48,
-          height: 48,
-          border: '4px solid #d1d5db',
-          borderTopColor: '#2563eb',
-          borderRadius: '50%',
-          animation: 'recipe-spin 1s linear infinite',
-        }}
-      />
-      <div style={{ fontSize: 14, color: '#555' }}>Rezept wird verarbeitet…</div>
-      <style>{`
-        @keyframes recipe-spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
+    <div className="flex w-full flex-col items-center justify-center gap-3">
+      <div className="size-12 animate-spin rounded-full border-4 border-muted border-t-primary" />
+      <div className="text-sm text-muted-foreground">Rezept wird verarbeitet…</div>
     </div>
   )
 }
