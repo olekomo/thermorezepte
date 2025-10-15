@@ -23,7 +23,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
         height="auto"
         contentClassName="py-3 border-b border-border bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60"
         left={<LoggedInLeftHeaderComponent user={user} />}
-        right={<AccountDropDownMenu user={user?.email ?? ''} />}
+        right={<AccountDropDownMenu />}
       />
 
       <main className="flex-1">
