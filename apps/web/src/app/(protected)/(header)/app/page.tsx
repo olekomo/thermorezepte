@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import CameraButton from '@/components/CameraButton'
 import { compressImage } from '@/hooks/useCompressImage'
 import { supabaseBrowser } from '@/lib/supabase/browser'
+import { ChefHat, Thermometer, Gauge, Timer as TimerIcon } from 'lucide-react'
 
 type Ingredient = {
   name?: string
@@ -111,7 +112,7 @@ export default function AppPage() {
     }
   }, [])
 
-  // choose file (like "Rezept hochladen")
+  // choose file
   const onPickFromDisk = useCallback((f: File) => {
     const url = URL.createObjectURL(f)
     setFile(f)
@@ -160,7 +161,6 @@ export default function AppPage() {
       } = await supabase.auth.getSession()
       if (!session) throw new Error('Keine Session')
 
-      // Call deine Next-API (/api/parse) -> ruft die Edge Function auf
       const res = await fetch('/api/parse', {
         method: 'POST',
         headers: {
@@ -174,7 +174,6 @@ export default function AppPage() {
         throw new Error(`API-Fehler: ${txt}`)
       }
 
-      // Start polling recipes
       setStatus('Bild wird verarbeitet…')
     } catch (e: any) {
       console.error('Submit error', e)
@@ -265,7 +264,6 @@ export default function AppPage() {
     <div className="mx-auto w-full max-w-screen-sm space-y-4 px-4 sm:space-y-6">
       {/* Bild/Result Card */}
       <div className="relative h-[360px] overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
-
         <div
           className={`flex h-full w-full ${showRecipe ? 'items-start justify-start p-5 overflow-y-auto space-y-4 flex-col' : 'items-center justify-center'} `}
         >
@@ -300,16 +298,18 @@ export default function AppPage() {
                   {steps.length > 0 && (
                     <div>
                       <div className="mb-1 font-semibold">Schritte</div>
-                      <ol className="ml-5 flex list-decimal flex-col gap-2">
+                      <ol className="ml-5 flex list-decimal flex-col gap-3">
                         {steps.map((step, idx) => {
-                          const meta = getStepMeta(step)
                           const notes = getStepNotes(step)
                           return (
                             <li key={idx} className="text-sm leading-6">
                               <div>{getStepText(step, idx)}</div>
-                              {meta && <div className="mt-0.5 text-xs text-muted-foreground">{meta}</div>}
+                              {/* Thermomix-Settings als Chips */}
+                              <StepMetaChips step={step} />
                               {notes && (
-                                <div className="mt-0.5 text-xs text-muted-foreground">Hinweis: {notes}</div>
+                                <div className="mt-0.5 text-xs text-muted-foreground">
+                                  Hinweis: {notes}
+                                </div>
                               )}
                             </li>
                           )
@@ -368,7 +368,7 @@ export default function AppPage() {
         </div>
 
         <div>
-          <CameraButton onPick={onPickFromDisk} label="Rezept fotografieren" />
+          <CameraButton onPick={onPickFromDisk} label="Rezept fotografieren" className="w-full" />
         </div>
 
         <div className="col-span-2 grid gap-2">
@@ -449,23 +449,50 @@ function getStepText(step: Step | string, index: number): string {
   )
 }
 
-function getStepMeta(step: Step | string): string | null {
-  if (typeof step === 'string') return null
-  const thermo = step.thermomix
-  if (!thermo) return null
-  const parts: string[] = []
-  if (thermo.mode) parts.push(`Modus: ${thermo.mode}`)
-  if (thermo.temp_c !== undefined && thermo.temp_c !== null) parts.push(`Temp: ${thermo.temp_c}°C`)
-  if (thermo.speed) parts.push(`Stufe: ${thermo.speed}`)
-  if (thermo.time_seconds !== undefined && thermo.time_seconds !== null) {
-    const minutes = Math.max(1, Math.round(thermo.time_seconds / 60))
-    parts.push(`Zeit: ${minutes} min`)
-  }
-  return parts.length ? parts.join(' · ') : null
-}
-
 function getStepNotes(step: Step | string): string | null {
   if (typeof step === 'string') return null
   if (!step.notes) return null
   return String(step.notes)
+}
+
+/* ---- Neu: Thermomix-Meta als Chips + Zeitformatierung ---- */
+
+function StepMetaChips({ step }: { step: Step | string }) {
+  if (typeof step === 'string') return null
+  const t = step.thermomix
+  if (!t) return null
+
+  const items: Array<{ icon: React.ReactNode; label: string }> = []
+  if (t.mode) items.push({ icon: <ChefHat className="size-3.5" />, label: t.mode })
+  if (t.temp_c !== undefined && t.temp_c !== null)
+    items.push({ icon: <Thermometer className="size-3.5" />, label: `${t.temp_c}°C` })
+  if (t.speed) items.push({ icon: <Gauge className="size-3.5" />, label: `Stufe ${t.speed}` })
+  if (t.time_seconds !== undefined && t.time_seconds !== null)
+    items.push({ icon: <TimerIcon className="size-3.5" />, label: formatThermoTime(t.time_seconds) })
+
+  if (items.length === 0) return null
+
+  return (
+    <div className="mt-1.5 flex flex-wrap gap-1.5">
+      {items.map((it, i) => (
+        <span
+          key={i}
+          className="inline-flex items-center gap-1 rounded-full border border-border bg-muted/50 px-2 py-0.5 text-[11px] leading-5 text-foreground"
+        >
+          {it.icon}
+          {it.label}
+        </span>
+      ))}
+    </div>
+  )
+}
+
+/** Zeitformat: < 120s → „Sek.“, sonst gerundete Minuten (min. 1) */
+function formatThermoTime(seconds: number): string {
+  if (seconds < 120) {
+    const s = Math.max(1, Math.round(seconds))
+    return `${s} Sek.`
+  }
+  const minutes = Math.max(1, Math.round(seconds / 60))
+  return `${minutes} min`
 }
