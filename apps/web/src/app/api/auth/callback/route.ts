@@ -5,9 +5,10 @@ export async function GET(req: NextRequest) {
   const url = req.nextUrl
   const code = url.searchParams.get('code') || ''
   const type = url.searchParams.get('type') || ''
+  void type
 
   const res = NextResponse.redirect(new URL('/app', url.origin))
-  
+
   res.cookies.set('post_oauth_redirect', '', { path: '/', maxAge: 0 })
 
   const { supabase, response } = createSupabaseForRoute(req, res)
