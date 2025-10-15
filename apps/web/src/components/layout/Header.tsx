@@ -36,13 +36,9 @@ const headerVariants = cva(
   }
 )
 
-const headerContentVariants = cva('mx-auto flex items-center justify-between', {
-  variants: {
-    maxWidth: maxWidthVariants,
-  },
-  defaultVariants: {
-    maxWidth: 'sm',
-  },
+const headerContentVariants = cva('h-full mx-auto flex items-stretch justify-between', {
+  variants: { maxWidth: maxWidthVariants },
+  defaultVariants: { maxWidth: 'sm' },
 })
 
 type HeaderProps = VariantProps<typeof headerVariants> &
@@ -66,9 +62,10 @@ export function Header({
   return (
     <header className={cn(headerVariants({ position, bordered, height }), className)}>
       <div className={cn(headerContentVariants({ maxWidth }), contentClassName)}>
-        <div className="flex items-center gap-2">{left}</div>
-        <div className="flex items-center gap-2">{right}</div>
+        <div className="self-stretch flex items-center h-full">{left}</div>
+        <div className="self-stretch flex items-center gap-2">{right}</div>
       </div>
     </header>
   )
 }
+

@@ -22,7 +22,7 @@ export function Hero() {
         transition={{ duration: 0.5 }}
         className="mx-auto mb-4 max-w-4xl text-balance text-4xl font-semibold leading-tight tracking-tight sm:text-5xl"
       >
-        <span className="bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text text-transparent">
+        <span className="bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text">
           Mach aus Rezeptfotos echte Cookidoo-Anleitungen
         </span>
       </motion.h1>
@@ -62,7 +62,7 @@ export function Hero() {
 
       <div className="mt-4 text-sm text-muted-foreground">
         <span className="inline-flex items-center gap-1">
-          <Sparkles className="size-4" aria-hidden /> Keine Registrierung für den Start nötig
+          <Sparkles className="size-4" aria-hidden /> Registrierung für den Start nötig
         </span>
       </div>
     </section>

@@ -3,35 +3,35 @@
 
 /* === Theme Tokens (Farben, Radius, etc.) === */
 @theme {
-  /* Farben */
-  --color-border: oklch(var(--border) / <alpha-value>);
-  --color-input: oklch(var(--input) / <alpha-value>);
-  --color-ring: oklch(var(--ring) / <alpha-value>);
-  --color-background: oklch(var(--background) / <alpha-value>);
-  --color-foreground: oklch(var(--foreground) / <alpha-value>);
+  /* ohne /<alpha-value> – Alpha kommt über Utilities (z.B. bg-primary/80) */
+  --color-border: oklch(var(--border));
+  --color-input: oklch(var(--input));
+  --color-ring: oklch(var(--ring));
+  --color-background: oklch(var(--background));
+  --color-foreground: oklch(var(--foreground));
 
-  --color-primary: oklch(var(--primary) / <alpha-value>);
-  --color-primary-foreground: oklch(var(--primary-foreground) / <alpha-value>);
+  --color-primary: oklch(var(--primary));
+  --color-primary-foreground: oklch(var(--primary-foreground));
 
-  --color-secondary: oklch(var(--secondary) / <alpha-value>);
-  --color-secondary-foreground: oklch(var(--secondary-foreground) / <alpha-value>);
+  --color-secondary: oklch(var(--secondary));
+  --color-secondary-foreground: oklch(var(--secondary-foreground));
 
-  --color-destructive: oklch(var(--destructive) / <alpha-value>);
-  --color-destructive-foreground: oklch(var(--destructive-foreground) / <alpha-value>);
+  --color-destructive: oklch(var(--destructive));
+  --color-destructive-foreground: oklch(var(--destructive-foreground));
 
-  --color-muted: oklch(var(--muted) / <alpha-value>);
-  --color-muted-foreground: oklch(var(--muted-foreground) / <alpha-value>);
+  --color-muted: oklch(var(--muted));
+  --color-muted-foreground: oklch(var(--muted-foreground));
 
-  --color-accent: oklch(var(--accent) / <alpha-value>);
-  --color-accent-foreground: oklch(var(--accent-foreground) / <alpha-value>);
+  --color-accent: oklch(var(--accent));
+  --color-accent-foreground: oklch(var(--accent-foreground));
 
-  --color-popover: oklch(var(--popover) / <alpha-value>);
-  --color-popover-foreground: oklch(var(--popover-foreground) / <alpha-value>);
+  --color-popover: oklch(var(--popover));
+  --color-popover-foreground: oklch(var(--popover-foreground));
 
-  --color-card: oklch(var(--card) / <alpha-value>);
-  --color-card-foreground: oklch(var(--card-foreground) / <alpha-value>);
+  --color-card: oklch(var(--card));
+  --color-card-foreground: oklch(var(--card-foreground));
 
-  /* Border Radius */
+  /* Radius */
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
@@ -40,61 +40,82 @@
 /* === Dark Mode Support === */
 @custom-variant dark (&:where(.dark, .dark *)) {}
 
-/* === Base Styles (optional, global) === */
+/* === Base Styles === */
+/* Farben aus dem Logo:
+   - Hintergrund (pale green):  #eefce7 → oklch(97.5% 0.031 135)
+   - Card / helles Grün:        #d9f5d3 → oklch(94.1% 0.054 140)
+   - Akzentgrün:                #bce0bb → oklch(87.1% 0.063 144)
+   - Primär (Button):           #1c7350 → oklch(49.6% 0.098 162)
+   - Text dunkelgrün:           #0a4b3a → oklch(36.9% 0.068 170)
+*/
+
 :root {
-  /* Beispielwerte für Farbvariablen – anpassbar an dein Design-System */
-  --background: 98% 0.02 270;
-  --foreground: 20% 0.03 270;
-  --card: 98% 0.02 270;
-  --card-foreground: 20% 0.03 270;
-  --popover: 98% 0.02 270;
-  --popover-foreground: 20% 0.03 270;
-  --primary: 65% 0.2 250;
-  --primary-foreground: 98% 0.02 270;
-  --secondary: 90% 0.05 250;
-  --secondary-foreground: 20% 0.03 270;
-  --muted: 90% 0.03 250;
-  --muted-foreground: 40% 0.02 270;
-  --accent: 80% 0.1 250;
-  --accent-foreground: 98% 0.02 270;
-  --destructive: 55% 0.25 25;
+  --background: 97.5% 0.031 135;        /* blasses Grün (#eefce7) */
+  --foreground: 36.9% 0.068 170;        /* dunkles Grün für Text (#0a4b3a) */
+
+  --card: 94.1% 0.054 140;              /* helles Grün (#d9f5d3) */
+  --card-foreground: 36.9% 0.068 170;
+
+  --popover: 94.1% 0.054 140;
+  --popover-foreground: 36.9% 0.068 170;
+
+  --primary: 49.6% 0.098 162;           /* Button/Brand (#1c7350) */
+  --primary-foreground: 98% 0.005 170;  /* sehr hell, nahe Weiß */
+
+  --secondary: 87.1% 0.063 144;         /* Akzent-Hintergründe (#bce0bb) */
+  --secondary-foreground: 36.9% 0.068 170;
+
+  --muted: 94.1% 0.054 140;
+  --muted-foreground: 49.6% 0.09 162;
+
+  --accent: 87.1% 0.063 144;
+  --accent-foreground: 36.9% 0.068 170;
+
+  --destructive: 55% 0.25 25;           /* unverändert (Rot) */
   --destructive-foreground: 98% 0.02 270;
-  --border: 80% 0.03 270;
-  --input: 85% 0.02 270;
-  --ring: 65% 0.2 250;
+
+  --border: 90% 0.05 140;               /* zarte Linie auf hellem BG */
+  --input: 90% 0.05 140;
+  --ring: 49.6% 0.098 162;
+
   --radius: 0.5rem;
 }
 
+/* Optionales Dark-Schema – falls du später dark theme aktivierst */
 .dark {
-  --background: 20% 0.03 270;
-  --foreground: 98% 0.02 270;
-  --card: 25% 0.03 270;
-  --card-foreground: 98% 0.02 270;
-  --popover: 25% 0.03 270;
-  --popover-foreground: 98% 0.02 270;
-  --primary: 70% 0.15 250;
-  --primary-foreground: 20% 0.03 270;
-  --secondary: 35% 0.04 250;
-  --secondary-foreground: 98% 0.02 270;
-  --muted: 35% 0.03 250;
-  --muted-foreground: 80% 0.02 270;
-  --accent: 45% 0.08 250;
-  --accent-foreground: 98% 0.02 270;
+  --background: 17% 0.034 163;          /* sehr dunkles Grün (#01140b) */
+  --foreground: 97.5% 0.031 135;
+
+  --card: 20% 0.04 163;
+  --card-foreground: 97.5% 0.031 135;
+
+  --popover: 20% 0.04 163;
+  --popover-foreground: 97.5% 0.031 135;
+
+  --primary: 49.6% 0.098 162;
+  --primary-foreground: 98% 0.005 170;
+
+  --secondary: 25% 0.05 163;
+  --secondary-foreground: 97.5% 0.031 135;
+
+  --muted: 25% 0.05 163;
+  --muted-foreground: 80% 0.03 170;
+
+  --accent: 30% 0.06 163;
+  --accent-foreground: 97.5% 0.031 135;
+
   --destructive: 55% 0.25 25;
   --destructive-foreground: 98% 0.02 270;
-  --border: 35% 0.03 270;
-  --input: 40% 0.03 270;
-  --ring: 70% 0.15 250;
+
+  --border: 30% 0.04 163;
+  --input: 30% 0.04 163;
+  --ring: 49.6% 0.098 162;
 }
 
-/* === Typografie & Reset (optional) === */
-html, body {
-  height: 100%;
-}
+/* Reset */
+html, body { height: 100%; }
 
-body {
-  @apply bg-background text-foreground antialiased;
+/* In base layer, damit Utilities überschreiben können */
+@layer base {
+  body { @apply text-foreground antialiased; }
 }
-
-/* === Utility Overrides (optional) === */
-/* Beispiel: Buttons, Cards, etc. können via Klassen genutzt werden */

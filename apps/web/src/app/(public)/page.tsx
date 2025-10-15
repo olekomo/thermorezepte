@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Hero } from "@/components/landing/Hero";
 import { FeatureGrid } from "@/components/landing/FeatureGrid";
+import LogoButton from "@/components/LogoButton";
 
 export default function HomePage() {
   return (
-    <div className="relative flex min-h-screen flex-col bg-background">
+    <div className="relative flex min-h-screen flex-col bg-transparent">
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-xl focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:shadow">
         Zum Inhalt springen
       </a>
@@ -24,9 +25,7 @@ export default function HomePage() {
         height="auto"
         contentClassName="py-3"
         left={
-          <Button asChild size="icon" className="h-12 w-12 rounded-xl no-underline">
-            <Link href="/app" aria-label="Zur App">LOGO</Link>
-          </Button>
+          <LogoButton />
         }
         right={
           <div className="flex items-center gap-2">

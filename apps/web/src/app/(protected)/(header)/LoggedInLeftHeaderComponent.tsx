@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { User } from '@supabase/supabase-js';
 import { Home, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils'; // falls du shadcn utils hast (sonst classnames)
+import LogoButton from '@/components/LogoButton';
 
 export default function LoggedInLeftHeaderComponent({ user }: { user: User | null }) {
   void user; // aktuell ungenutzt, falls du später Avatar etc. anzeigen willst
@@ -27,7 +28,8 @@ export default function LoggedInLeftHeaderComponent({ user }: { user: User | nul
   }, [isRecipes, router]);
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center self-strech gap-3">
+      <LogoButton/>
       <Button
         onClick={handleClick}
         variant="outline"
