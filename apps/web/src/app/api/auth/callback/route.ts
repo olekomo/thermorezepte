@@ -1,3 +1,4 @@
+import { ROUTES } from '@/lib/routes'
 import { createSupabaseForRoute } from '@/lib/supabase/server-route'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -5,10 +6,10 @@ export async function GET(req: NextRequest) {
   const url = req.nextUrl
   const code = url.searchParams.get('code') || ''
   const type = url.searchParams.get('type') || ''
-  void type
-
-  const res = NextResponse.redirect(new URL('/app', url.origin))
-
+  let res = NextResponse.redirect(new URL(ROUTES.app, url.origin))
+  if (type=='recovery')
+    res = NextResponse.redirect(new URL(ROUTES.resetPassword, url.origin))
+  
   res.cookies.set('post_oauth_redirect', '', { path: '/', maxAge: 0 })
 
   const { supabase, response } = createSupabaseForRoute(req, res)

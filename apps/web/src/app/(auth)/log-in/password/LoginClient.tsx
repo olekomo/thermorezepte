@@ -98,10 +98,9 @@ export default function LoginClient() {
           (await import('@/lib/supabase/browser')).supabaseBrowser();
 
         const origin = window.location.origin;
-        const redirect = encodeURIComponent('/reset-password');
 
         const { error } = await s.auth.resetPasswordForEmail(email, {
-          redirectTo: `${origin}${ROUTES.authCallbackClient}?intent=recovery&redirect=${redirect}`,
+          redirectTo: `${origin}${ROUTES.authCallbackServer}`,
         });
 
         if (error) {

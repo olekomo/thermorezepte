@@ -1,8 +1,9 @@
 export const ROUTES = {
-  loginOrCreateAccount: 'log-in-or-create-account',
-  login: '/log-in/password',
+  home: '/',
   app: '/app',
-  resetPassword: '/reset-password',
-  authCallbackClient: '/auth/callback',
+  loginOrCreateAccount: '/log-in-or-create-account',
+  login: '/log-in/password',
+  createAccount: '/create-account/password',
   authCallbackServer: '/api/auth/callback',
+  resetPassword: '/reset-password',
 }

@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { LogOut, ChevronDown, Mail } from 'lucide-react';
+import { ChevronDown, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 import LogoutButton from './LogoutButton';
 

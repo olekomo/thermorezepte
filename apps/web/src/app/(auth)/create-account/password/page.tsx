@@ -18,6 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { ROUTES } from '@/lib/routes';
 
 const schema = z.object({
   email: z.string().min(1, 'Bitte E-Mail eingeben').email('Ungültige E-Mail'),
@@ -51,7 +52,7 @@ export default function CreateAccountPage() {
   async function onSubmit(values: FormValues) {
     try {
       setBusy(true);
-      const redirect = `${location.origin}/api/auth/callback`;
+      const redirect = `${location.origin}${ROUTES.authCallbackServer}`;
       const { error } = await s.auth.signUp({
         email: values.email,
         password: values.password,

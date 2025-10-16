@@ -1,6 +1,7 @@
 'use client'
 import { supabaseBrowser } from '@/lib/supabase/browser'
 import { Button } from '@/components/ui/button'
+import { ROUTES } from '@/lib/routes'
 
 export function GoogleSignInButton() {
   const onClick = async () => {
@@ -9,7 +10,7 @@ export function GoogleSignInButton() {
     document.cookie = `post_oauth_redirect=${encodeURIComponent('/app')}; Path=/; Max-Age=600; SameSite=Lax`
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${origin}/api/auth/callback` },
+      options: { redirectTo: `${origin}${ROUTES.authCallbackServer}` },
     })
   }
 
