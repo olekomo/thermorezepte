@@ -54,7 +54,7 @@ export default function RecipesPage() {
   }, [fetchData])
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-6 sm:px-6">
+    <div className="max-w-screen overflow-x-hidden px-0 py-0 mx-0">
       <h1 className="sr-only">Rezepte</h1>
 
       <Card className="rounded-2xl border-border bg-card">
