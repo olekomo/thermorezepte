@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { LogOut } from 'lucide-react';
 
 export default function LogoutButton({ className }: { className?: string }) {
   const router = useRouter();
@@ -24,13 +25,17 @@ export default function LogoutButton({ className }: { className?: string }) {
 
   return (
     <Button
-      type="button"
-      variant="ghost"
-      className={className}
-      onClick={handleLogout}
-      disabled={pending}
-    >
-      {pending ? 'Wird abgemeldet…' : 'Logout'}
-    </Button>
+  type="button"
+  variant="ghost"
+  className={`inline-flex items-center gap-2 ${className}`}
+  onClick={handleLogout}
+  disabled={pending}
+>
+  <LogOut className="h-4 w-4 shrink-0 ml-2" aria-hidden="true" />
+  <span className="leading-none">
+    {pending ? 'Wird abgemeldet…' : 'Logout'}
+  </span>
+</Button>
+
   );
 }

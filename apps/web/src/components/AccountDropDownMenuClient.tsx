@@ -119,8 +119,7 @@ export default function AccountDropDownMenuClient({
           onSelect={(e) => e.preventDefault()}
           className="cursor-pointer text-destructive focus:text-destructive"
         >
-          <LogOut className="mr-2 h-4 w-4" aria-hidden />
-          <LogoutButton className="-ml-1 h-auto px-0" />
+          <LogoutButton className="justify-start w-full h-full px-0 m-0" />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
