@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   // 1) Fehlenden Code abfangen
   if (!code) {
     return NextResponse.redirect(
-      new URL('/login?error=missing_code', url.origin),
+      new URL(`${ROUTES.login}?error=missing_code`, url.origin),
       { status: 303 }
     )
   }
@@ -37,13 +37,13 @@ export async function GET(req: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (error) {
       return NextResponse.redirect(
-        new URL('/login?error=auth_code_invalid', url.origin),
+        new URL(`${ROUTES.login}?error=auth_code_invalid`, url.origin),
         { status: 303 }
       )
     }
   } catch {
     return NextResponse.redirect(
-      new URL('/login?error=auth_code_exception', url.origin),
+      new URL(`${ROUTES.login}?error=auth_code_exception`, url.origin),
       { status: 303 }
     )
   }
