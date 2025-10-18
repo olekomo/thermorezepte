@@ -5,5 +5,6 @@ export const ROUTES = {
   login: '/log-in/password',
   createAccount: '/create-account/password',
   authCallbackServer: '/api/auth/callback',
+  authCallbackRecoveryServer: '/api/auth/callback/recovery',
   resetPassword: '/reset-password',
 }

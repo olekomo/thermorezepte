@@ -100,7 +100,7 @@ export default function LoginClient() {
         const origin = window.location.origin;
 
         const { error } = await s.auth.resetPasswordForEmail(email, {
-          redirectTo: `${origin}${ROUTES.authCallbackServer}`,
+          redirectTo: `${origin}${ROUTES.authCallbackRecoveryServer}`,
         });
 
         if (error) {

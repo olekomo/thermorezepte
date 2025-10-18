@@ -14,13 +14,7 @@ export async function GET(req: NextRequest) {
   }
 
   // 2) Ziel bestimmen (Recovery → Reset-Page, sonst App)
-  let target = ROUTES.app
-
-  // 3) Optional: post_oauth_redirect Cookie respektieren (nur sichere, relative Paths)
-  const post = req.cookies.get('post_oauth_redirect')?.value
-  if (post && post.startsWith('/')) {
-    target = post
-  }
+  const target = ROUTES.resetPassword
 
   // 4) Redirect-Response vorbereiten (auf diese Response werden Cookies gesetzt)
   const res = NextResponse.redirect(new URL(target, url.origin), { status: 303 })
