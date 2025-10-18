@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
   const url = req.nextUrl
   const code = url.searchParams.get('code')
   const type = url.searchParams.get('type') ?? ''
-
+  console.log('Type: '+type)
   // 1) Fehlenden Code abfangen
   if (!code) {
     return NextResponse.redirect(
